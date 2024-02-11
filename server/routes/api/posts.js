@@ -28,7 +28,6 @@ router.delete('/:id', async (req, res) => {
 
 async function loadPostsCollection() {
   const client = await mongodb.MongoClient.connect('mongodb+srv://asdf:asdf@cluster0.fk1xdy4.mongodb.net/?retryWrites=true&w=majority', {
-    useNewUrlParser: true
   });
 
   return client.db('amazify').collection('Traffic');
