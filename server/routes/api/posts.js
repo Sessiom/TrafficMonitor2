@@ -22,6 +22,26 @@ router.post('/', async (req, res) => {
   res.status(201).send();
 });
 
+// Update Post
+router.patch('/:id', async (req, res) => {
+  const posts = await loadPostsCollection();
+  const update = { $set: {} };
+  if (req.body.title !== undefined) {
+    update.$set.title = req.body.title;
+  }
+  if (req.body.text !== undefined) {
+    update.$set.text = req.body.text;
+  }
+  if (req.body.likes !== undefined) {
+    update.$set.likes = req.body.likes;
+  }
+  await posts.updateOne(
+    { _id: new mongodb.ObjectId(req.params.id) },
+    update
+  );
+  res.status(200).send();
+});
+
 // Delete Post
 router.delete('/:id', async (req, res) => {
   const posts = await loadPostsCollection();

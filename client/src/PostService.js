@@ -27,6 +27,11 @@ class PostService {
         });
     }
 
+    // Update Post
+    static updatePost(id, updatedPost) { // New updatePost method
+        return axios.patch(`${url}${id}`, updatedPost);
+    }
+
     // Delete Post
     static deletePost(id) {
         return axios.delete(`${url}${id}`);
