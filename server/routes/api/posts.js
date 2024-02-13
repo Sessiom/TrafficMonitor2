@@ -12,8 +12,11 @@ router.get('/', async (req, res) => {
 // Add Post
 router.post('/', async (req, res) => {
   const posts = await loadPostsCollection();
+  const likes = parseInt(req.body.likes, 10);
   await posts.insertOne({
+    title: req.body.title,
     text: req.body.text,
+    likes: req.body.likes,
     createdAt: new Date()
   });
   res.status(201).send();

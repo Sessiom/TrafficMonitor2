@@ -2,13 +2,20 @@
   <div class = "container">
     <h1>Latest Posts</h1>
     <div class="create-post">
+      <label for="create-title">Title</label> <!-- New label for title -->
+      <input type="text" id="create-title" v-model="title" placeholder="Title of the post"> <!-- New input for title -->
+      <br>
+      <label for="create-likes">Likes</label> <!-- New label for likes -->
+      <input type="number" id="create-likes" v-model.number="likes" placeholder="Number of likes"> <!-- New input for likes -->
+      <br>
       <label for="create-post"> Say Something...</label>
       <input type="text" id="create-post" v-model="text" placeholder="Create a post">
       <button v-on:click="createPost">Post!</button>
     </div>
     <hr>
     <p class="error" v-if="error">{{ error }}</p>
-    <div class = "posts-container">
+    <div v-if="loading">Loading...</div> <!-- Loading bar or spinner goes here -->
+    <div class = "posts-container" v-else>
       <div class="post"
         v-for="(post, index) in posts"
         v-bind:item="post"
@@ -16,6 +23,7 @@
         v-bind:key="post._id"
         v-on:dblclick="deletePost(post._id)"
       >
+      <h2 class="title">{{ post.title }}</h2> <!-- Display the title -->
         <p class="date">
           {{
             (new Date(post.createdAt).getMonth() + 1) + '/' +
@@ -24,6 +32,7 @@
           }}
         </p>
         <p class="text">{{ post.text }}</p>
+        <h6 class="likes">Likes: {{ post.likes }}</h6> <!-- Display the likes -->
       </div>
     </div>
   </div>
@@ -38,19 +47,25 @@ export default {
     return {
       posts: [],
       error: '',
-      text: ''
+      text: '',
+      title: '',  // Add title to the data
+      likes: 0,  // Add likes to the data
+      loading: false
     }
   },
   async created() {
+    this.loading = true;
     try {
       this.posts = await PostService.getPosts();
     } catch (err) {
       this.error = err.message;
+    } finally {
+      this.loading = false;
     }
   },
   methods: {
     async createPost() {
-        await PostService.insertPost(this.text);
+        await PostService.insertPost(this.text, this.title, this.likes);  // Add title to the function
         this.posts = await PostService.getPosts();
     },
     async deletePost(id) {
