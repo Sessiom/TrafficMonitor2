@@ -1,5 +1,6 @@
 const express = require('express');
 const mongodb = require('mongodb');
+require('dotenv').config();
 
 const router = express.Router();
 
@@ -50,10 +51,10 @@ router.delete('/:id', async (req, res) => {
 });
 
 async function loadPostsCollection() {
-  const client = await mongodb.MongoClient.connect('mongodb+srv://asdf:asdf@cluster0.fk1xdy4.mongodb.net/?retryWrites=true&w=majority', {
+  const client = await mongodb.MongoClient.connect(process.env.MONGODB_URI, {
   });
 
-  return client.db('amazify').collection('Traffic');
+  return client.db(process.env.MONGODB_NAME).collection(process.env.MONGODB_COLLECTION);
 }
 
 module.exports = router;
