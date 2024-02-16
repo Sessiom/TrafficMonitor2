@@ -5,7 +5,6 @@
       <router-link class="nav-link-center" to="/">Traffic Monitor</router-link> | 
       <router-link class="nav-link-left" to="/history">History</router-link>
     </nav>
-    <router-view/>
   </template>
   
   <style scoped>
