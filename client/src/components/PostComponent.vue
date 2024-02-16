@@ -1,17 +1,21 @@
 <template>
   <div class = "container">
-    <h1>Latest Posts</h1>
-    <div class="create-post">
+    <h1 style="text-align: center;">Latest Posts</h1>
+    <div style="text-align: center;">
+      <button @click="showForm = !showForm">Enter Manually</button>
+    </div>
+    <form v-if="showForm" class="create-post">
       <label for="create-title">Title</label>
       <input type="text" id="create-title" v-model="title" placeholder="Title of the post">
       <br>
       <label for="create-likes">Likes</label>
       <input type="number" id="create-likes" v-model.number="likes" placeholder="Number of likes">
       <br>
-      <label for="create-post"> Say Something...</label>
-      <input type="text" id="create-post" v-model="text" placeholder="Create a post">
-      <button v-on:click="createPost">Post!</button>
-    </div>
+      <label for="create-words"> Say Something...</label>
+      <input type="text" id="create-words" v-model="text" placeholder="Create a post">
+      <br>
+      <div><button v-on:click="createPost">Post!</button></div>
+    </form>
     <hr>
     <p class="error" v-if="error">{{ error }}</p>
     <div v-if="loading">Loading...</div>
@@ -60,6 +64,7 @@ export default {
       loading: false,
       editingIndex: null, // New data property to track which post is being edited
       editedPost: {}, // New data property to hold the edited post data
+      showForm: false, // New data property to control form visibility
     }
   },
   async created() {
@@ -134,6 +139,14 @@ p.text {
   font-size: 20px;
   color: black;
   margin-bottom: 10px;
+}
+.create-post {
+  text-align: center;
+  display: grid;
+  background-color: white;
+  box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
+  padding: 20px;
+  margin: 15px;
 }
 
 </style>
