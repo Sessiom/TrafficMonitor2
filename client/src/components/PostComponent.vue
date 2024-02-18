@@ -1,8 +1,7 @@
 <template>
   <div class = "container">
-    <h1 style="text-align: center;">Latest Posts</h1>
     <div style="text-align: center;">
-      <button @click="showForm = !showForm">Enter Manually</button>
+      <button class="form" @click="showForm = !showForm">Enter Manually</button>
     </div>
     <form @submit.prevent = "createPost" v-if="showForm" class="create-post">
       <label for="create-sign1">Sign 1</label>
@@ -25,7 +24,7 @@
         v-bind:item="post"
         v-bind:index="index"
         v-bind:key="post._id">
-        <button class ="delete-button" v-on:click="deletePost(post._id)">Delete</button>
+        <button class ="delete-button" v-on:click="deletePost(post._id)"><i class="fas fa-trash"></i></button>
         <p class="date">
           {{
             (new Date(post.createdAt).getMonth() + 1) + '/' +
@@ -35,7 +34,7 @@
         </p>
         <p class="sign1">Sign 1: {{ post.sign1 }}</p>
         <p class="sign2">Sign 2: {{ post.sign2 }}</p>
-        <p class="total">Total: {{ post.total }}</p>
+        <p class="total">Total:  {{ post.total }}</p>
       </div>
     </div>
   </div>
@@ -177,6 +176,23 @@ p.text {
   box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
   padding: 20px;
   margin: 15px;
+}
+.date {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: grey;
+  margin: 0;
+  padding: 0;
+}
+.form {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  margin: 20px 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 </style>
