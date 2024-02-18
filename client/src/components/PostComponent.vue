@@ -3,17 +3,22 @@
     <div style="text-align: center;">
       <button class="form" @click="showForm = !showForm">Enter Manually</button>
     </div>
-    <form @submit.prevent = "createPost" v-if="showForm" class="create-post">
-      <label for="create-sign1">Sign 1</label>
-      <input type="number" id="create-sign1" v-model.number="sign1" placeholder="Number of cars">
-      <br>
-      <label for="create-sign2">Sign 2</label>
-      <input type="number" id="create-sign2" v-model.number="sign2" placeholder="Number of cars">
-      <br>
-      <label for="create-total">Total</label>
-      <input type="number" id="create-total" :value="total" placeholder="Total number of cars" readonly>
-      <br>
-      <div><button type="submit">Submit</button></div>
+    <form @submit.prevent="createPost" v-if="showForm" class="create-post">
+      <div class="form-group">
+        <label for="create-sign1">Sign 1</label>
+        <input type="number" id="create-sign1" v-model.number="sign1" placeholder="Number of cars">
+      </div>
+      <div class="form-group">
+        <label for="create-sign2">Sign 2</label>
+        <input type="number" id="create-sign2" v-model.number="sign2" placeholder="Number of cars">
+      </div>
+      <div class="form-group">
+        <label for="create-total">Total</label>
+        <input type="number" id="create-total" :value="total" placeholder="Total number of cars" readonly>
+      </div>
+      <div class="form-group">
+        <button type="submit">Submit</button>
+      </div>
     </form>
     <hr>
     <p class="error" v-if="error">{{ error }}</p>
@@ -169,14 +174,6 @@ p.text {
   color: black;
   margin-bottom: 10px;
 }
-.create-post {
-  text-align: center;
-  display: grid;
-  background-color: white;
-  box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
-  padding: 20px;
-  margin: 15px;
-}
 .date {
   text-align: center;
   font-size: 24px;
@@ -197,5 +194,42 @@ p.text {
 .form:hover {
   background-color: #1f8f2f;
 }
+.create-post {
+  display: grid;
+  grid-template-columns: 1fr; /* Add this line */
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f8f8f8;
+}
 
+.create-post .form-group {
+  display: grid; /* Add this line */
+  grid-template-columns: 1fr; /* Add this line */
+  margin-bottom: 20px;
+}
+
+.create-post .form-group label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.create-post .form-group input {
+  max-width: 95%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.create-post button {
+  max-width: 50%; /* Ensure it doesn't overflow its container */
+  margin: auto; /* Center the button */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+}
 </style>
