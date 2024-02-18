@@ -25,19 +25,14 @@ router.post('/', async (req, res) => {
 // Update Post
 router.patch('/:id', async (req, res) => {
   const posts = await loadPostsCollection();
-  const update = { $set: {} };
-  if (req.body.title !== undefined) {
-    update.$set.title = req.body.title;
-  }
-  if (req.body.text !== undefined) {
-    update.$set.text = req.body.text;
-  }
-  if (req.body.likes !== undefined) {
-    update.$set.likes = req.body.likes;
-  }
   await posts.updateOne(
-    { _id: new mongodb.ObjectId(req.params.id) },
-    update
+    { _id: new mongodb.ObjectID(req.params.id) },
+    { $set: {
+        sign1: req.body.sign1,
+        sign2: req.body.sign2,
+        total: req.body.total
+      }
+    }
   );
   res.status(200).send();
 });

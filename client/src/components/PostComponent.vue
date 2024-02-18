@@ -24,9 +24,8 @@
         v-for="(post, index) in posts"
         v-bind:item="post"
         v-bind:index="index"
-        v-bind:key="post._id"
-        v-on:dblclick="deletePost(post._id)"
-      >
+        v-bind:key="post._id">
+        <button class ="delete-button" v-on:click="deletePost(post._id)">Delete</button>
         <p class="date">
           {{
             (new Date(post.createdAt).getMonth() + 1) + '/' +
@@ -37,12 +36,6 @@
         <p class="sign1">Sign 1: {{ post.sign1 }}</p>
         <p class="sign2">Sign 2: {{ post.sign2 }}</p>
         <p class="total">Total: {{ post.total }}</p>
-        <button @click="showEditForm = !showEditForm" v-on:click="editPost(index)">Edit</button> <!-- New "Edit" button -->
-        <div v-if="showEditForm && (editingIndex === index)"> <!-- New edit form -->
-          <input type="text" v-model="editedPost.sign1" @input="editedPost.sign1 = $event.target.value" placeholder="Number of cars">
-          <input type="text" v-model="editedPost.sign2" @input="editedPost.sign2 = $event.target.value" placeholder="Number of cars">
-          <button v-on:click="updatePost(post._id)">Update</button>
-        </div>
       </div>
     </div>
   </div>
@@ -61,10 +54,7 @@ export default {
       sign2: 0,
       total: 0,
       loading: false,
-      editingIndex: null, // New data property to track which post is being edited
-      editedPost: {}, // New data property to hold the edited post data
       showForm: false, // New data property to control form visibility
-      showEditForm: false,
     }
   },
   async created() {
@@ -96,17 +86,6 @@ export default {
       await PostService.deletePost(id);
       this.posts = await PostService.getPosts();
     },
-    editPost(index) { // New method to handle the "Edit" button click
-      this.editingIndex = index;
-      this.editedPost = {}; // Reset to an empty object
-      Object.assign(this.editedPost, this.posts[index]);
-    },
-    async updatePost(id) { // New method to handle the form submission and update the post
-      await PostService.updatePost(id, this.editedPost);
-      this.posts = await PostService.getPosts();
-      this.editingIndex = null;
-      this.editedPost = {}; // Reset to an empty object
-    }
   }
 }
 </script>
@@ -127,10 +106,25 @@ p.error {
 
 div.post{
   position: relative;
-  border: 1px solid green;
-  background-color: lightgreen;
-  padding: 10px 10px 30px 10px;
-  margin-bottom: 15px;
+  text-align: left;
+  display: grid;
+  background-color: white;
+  box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
+  padding: 20px;
+  margin: 15px;
+}
+.delete-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 5px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right;
 }
 
 div.created-at {
