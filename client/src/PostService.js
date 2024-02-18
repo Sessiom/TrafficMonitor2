@@ -19,11 +19,11 @@ class PostService {
     }
 
     // Create Post
-    static insertPost(text, title, likes) {         // added title parameter
+    static insertPost(sign1, sign2, total) {         // added title parameter
         return axios.post(url, {
-            text,
-            title,
-            likes
+            sign1,
+            sign2,
+            total
         });
     }
 

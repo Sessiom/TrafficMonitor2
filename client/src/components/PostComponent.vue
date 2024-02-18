@@ -5,14 +5,14 @@
       <button @click="showForm = !showForm">Enter Manually</button>
     </div>
     <form v-if="showForm" class="create-post">
-      <label for="create-title">Title</label>
-      <input type="text" id="create-title" v-model="title" placeholder="Title of the post">
+      <label for="create-sign1">Sign 1</label>
+      <input type="number" id="create-sign1" v-model.number="sign1" placeholder="Number of cars">
       <br>
-      <label for="create-likes">Likes</label>
-      <input type="number" id="create-likes" v-model.number="likes" placeholder="Number of likes">
+      <label for="create-sign2">Sign 2</label>
+      <input type="number" id="create-sign2" v-model.number="sign2" placeholder="Number of cars">
       <br>
-      <label for="create-words"> Say Something...</label>
-      <input type="text" id="create-words" v-model="text" placeholder="Create a post">
+      <label for="create-total">Total</label>
+      <input type="number" id="create-total" :value="total" placeholder="Total number of cars" readonly>
       <br>
       <div><button v-on:click="createPost">Post!</button></div>
     </form>
@@ -27,7 +27,6 @@
         v-bind:key="post._id"
         v-on:dblclick="deletePost(post._id)"
       >
-        <h2 class="title">{{ post.title }}</h2>
         <p class="date">
           {{
             (new Date(post.createdAt).getMonth() + 1) + '/' +
@@ -35,13 +34,13 @@
             new Date(post.createdAt).getFullYear()
           }}
         </p>
-        <p class="text">{{ post.text }}</p>
-        <h6 class="likes">Likes: {{ post.likes }}</h6>
-        <button v-on:click="editPost(index)">Edit</button> <!-- New "Edit" button -->
-        <div v-if="editingIndex === index"> <!-- New edit form -->
-          <input type="text" v-model="editedPost.title" @input="editedPost.title = $event.target.value" placeholder="Title of the post">
-          <input type="text" v-model="editedPost.text" @input="editedPost.text = $event.target.value" placeholder="Create a post">
-          <input type="number" v-model.number="editedPost.likes" @input="editedPost.likes = $event.target.value" placeholder="Number of likes">
+        <p class="sign1">Sign 1: {{ post.sign1 }}</p>
+        <p class="sign2">Sign 2: {{ post.sign2 }}</p>
+        <p class="total">Total: {{ post.total }}</p>
+        <button @click="showEditForm = !showEditForm" v-on:click="editPost(index)">Edit</button> <!-- New "Edit" button -->
+        <div v-if="showEditForm && (editingIndex === index)"> <!-- New edit form -->
+          <input type="text" v-model="editedPost.sign1" @input="editedPost.sign1 = $event.target.value" placeholder="Number of cars">
+          <input type="text" v-model="editedPost.sign2" @input="editedPost.sign2 = $event.target.value" placeholder="Number of cars">
           <button v-on:click="updatePost(post._id)">Update</button>
         </div>
       </div>
@@ -58,13 +57,14 @@ export default {
     return {
       posts: [],
       error: '',
-      text: '',
-      title: '',
-      likes: 0,
+      sign1: 0,
+      sign2: 0,
+      total: 0,
       loading: false,
       editingIndex: null, // New data property to track which post is being edited
       editedPost: {}, // New data property to hold the edited post data
       showForm: false, // New data property to control form visibility
+      showEditForm: false,
     }
   },
   async created() {
@@ -77,9 +77,19 @@ export default {
       this.loading = false;
     }
   },
+  computed: {
+    calculatedTotal() {
+      return this.sign1 + this.sign2;
+    }
+  },
+  watch: {
+    calculatedTotal(newTotal) {
+      this.total = newTotal;
+    }
+  },
   methods: {
     async createPost() {
-      await PostService.insertPost(this.text, this.title, this.likes);
+      await PostService.insertPost(this.sign1, this.sign2, this.total);
       this.posts = await PostService.getPosts();
     },
     async deletePost(id) {
