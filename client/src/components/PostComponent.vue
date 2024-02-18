@@ -4,7 +4,7 @@
     <div style="text-align: center;">
       <button @click="showForm = !showForm">Enter Manually</button>
     </div>
-    <form v-if="showForm" class="create-post">
+    <form @submit.prevent = "createPost" v-if="showForm" class="create-post">
       <label for="create-sign1">Sign 1</label>
       <input type="number" id="create-sign1" v-model.number="sign1" placeholder="Number of cars">
       <br>
@@ -14,7 +14,7 @@
       <label for="create-total">Total</label>
       <input type="number" id="create-total" :value="total" placeholder="Total number of cars" readonly>
       <br>
-      <div><button v-on:click="createPost">Post!</button></div>
+      <div><button type="submit">Post!</button></div>
     </form>
     <hr>
     <p class="error" v-if="error">{{ error }}</p>
@@ -60,7 +60,8 @@ export default {
   async created() {
     this.loading = true;
     try {
-      this.posts = await PostService.getPosts();
+      const posts = await PostService.getPosts();
+      this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } catch (err) {
       this.error = err.message;
     } finally {
@@ -79,12 +80,18 @@ export default {
   },
   methods: {
     async createPost() {
-      await PostService.insertPost(this.sign1, this.sign2, this.total);
-      this.posts = await PostService.getPosts();
-    },
+      const newPost = {
+        sign1: this.sign1,
+        sign2: this.sign2,
+        total: this.total,
+        createdAt: new Date()
+      };
+      this.posts.unshift(newPost);
+      await PostService.insertPost(newPost.sign1, newPost.sign2, newPost.total);
+  },
     async deletePost(id) {
+      this.posts = this.posts.filter(post => post._id !== id);
       await PostService.deletePost(id);
-      this.posts = await PostService.getPosts();
     },
   }
 }
