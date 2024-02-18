@@ -91,10 +91,13 @@ export default {
         const posts = await PostService.getPosts();
         this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         toast.clear();
-        toast.success('New post added successfully!');
+        toast.success('New post added.');
       } catch (error) {
         toast.error('Failed to add new post.');
       }
+      this.sign1 = 0;
+      this.sign2 = 0;
+      this.total = 0;
   },
     async deletePost(id) {
       try {
@@ -103,7 +106,7 @@ export default {
         const posts = await PostService.getPosts();
         this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         toast.clear();
-        toast.success('Post deleted successfully!');
+        toast.success('Post deleted.');
       } catch (error) {
         toast.error('Failed to delete post.');
       }
