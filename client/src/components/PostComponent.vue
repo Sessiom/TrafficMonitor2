@@ -68,6 +68,7 @@ export default {
       toast.clear();
     } catch (err) {
       this.error = err.message;
+      toast.clear();
       toast.error('Failed to load posts.');
     } finally {
       this.loading = false;
