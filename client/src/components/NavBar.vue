@@ -3,7 +3,7 @@
 <template>
     <nav> 
       <router-link class="nav-link-center" to="/">Traffic Monitor</router-link> | 
-      <router-link class="nav-link-left" to="/history">History</router-link>
+      <router-link class="nav-link-left" to="/history"> History <i class="fas fa-history"></i></router-link>
     </nav>
   </template>
   

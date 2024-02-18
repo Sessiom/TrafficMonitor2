@@ -13,7 +13,7 @@
       <label for="create-total">Total</label>
       <input type="number" id="create-total" :value="total" placeholder="Total number of cars" readonly>
       <br>
-      <div><button type="submit">Post!</button></div>
+      <div><button type="submit">Submit</button></div>
     </form>
     <hr>
     <p class="error" v-if="error">{{ error }}</p>
@@ -143,7 +143,7 @@ div.post{
   top: 0;
   right: 0;
   margin: 5px;
-  background-color: red;
+  background-color: rgb(201, 201, 201);
   color: white;
   border: none;
   padding: 5px 10px;
@@ -193,6 +193,9 @@ p.text {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+.form:hover {
+  background-color: #1f8f2f;
 }
 
 </style>

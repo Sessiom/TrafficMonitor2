@@ -95,7 +95,7 @@ button {
 }
 
 .connectButton{
-    background-color: #24af37;
+    background-color: #4CAF50;
     margin-right: 10px;
 }
 .connectButton:hover{
