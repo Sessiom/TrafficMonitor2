@@ -15,15 +15,15 @@
                 <h2>Red Red Override</h2>
                 <button id="onButton" class="onButton">ON</button>
                 <button id="offButton" class="offButton">OFF</button>
-                <p class="gray-label">Last value sent: <span id="valueSent"></span></p>
+                <p class="gray-label">Last value sent: <span id="valueSent">{{ latestValueSent }}</span></p>
             </div>
         </div>
 
         <div class="card-grid">
             <div class="card">
                 <h2>Sign 1</h2>
-                <p class="reading"><span id="valueContainer2">NaN</span></p>
-                <p class="gray-label">Last reading: <span class="timestamp"></span></p>
+                <p class="reading"><span id="valueContainer2">{{ retrievedSouthValue }}</span></p>
+                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[0] }}</span></p>
             </div>
 
             <div class="card">
@@ -173,10 +173,25 @@ export default {
         })
     },
     onDisconnected() {
-      // Your code here
+        console.log('Device Disconnected:', event.target.device.name);
+        this.bleState = 'Device Disconnected';
+        this.connectToDevice();
     },
     handleCharacteristicChange1() {
-      // Your code here
+        if(this.isUpdating) {
+            this.retrievedSouthValue = "STOP";
+            return;
+        }
+        else{
+            const newValueReceived = new TextDecoder().decode(event.target.value);
+            console.log("South Characteristic value changed: ", newValueReceived);
+            if (newValueReceived === "1") {
+            this.retrievedSouthValue = "SLOW";
+            } else {
+            this.retrievedSouthValue = "STOP";
+            }
+            this.timestampContainers[0] = this.getDateTime();
+        }
     },
     handleCharacteristicChange2() {
       // Your code here
@@ -184,8 +199,38 @@ export default {
     handleCharacteristicChange3() {
       // Your code here
     },
-    writeOnCharacteristic() {
-      // Your code here
+
+    onButton() {
+      this.writeOnCharacteristic(1);
+    },
+    offButton() {
+      this.writeOnCharacteristic(0);
+    },
+    writeOnCharacteristic(value) {
+        if (this.bleServer && this.bleServer.connected) {
+            if(value === 1){
+                this.isUpdating = true;
+            }
+            else{
+                this.isUpdating = false;
+            }
+            this.bleServiceFound.getCharacteristic(this.RedRedCharacteristic)
+            .then(characteristic => {
+                console.log("Found the RedRed characteristic: ", characteristic.uuid);
+                const data = new Uint8Array([value]);
+                return characteristic.writeValue(data);
+            })
+            .then(() => {
+                this.latestValueSent = value;
+                console.log("Value written to RedRedcharacteristic:", value);
+            })
+            .catch(error => {
+                console.error("Error writing to the RedRed characteristic: ", error);
+            });
+        } else {
+            console.error ("Bluetooth is not connected. Cannot write to characteristic.")
+            window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
+        }
     },
     disconnectDevice() {
       // Your code here
