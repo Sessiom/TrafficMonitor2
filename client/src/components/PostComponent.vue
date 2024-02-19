@@ -37,9 +37,24 @@
             new Date(post.createdAt).getFullYear()
           }}
         </p>
-        <p class="sign1">Sign 1: {{ post.sign1 }}</p>
-        <p class="sign2">Sign 2: {{ post.sign2 }}</p>
-        <p class="total">Total:  {{ post.total }}</p>
+        <div class="grid-container">
+
+          <div class = "category">
+            <p><span class="sign1">Sign 1: </span> <span> {{ post.sign1 }} </span></p>
+            <!-- <p class="value">{{ post.sign1 }}</p> -->
+          </div>
+
+          <div class="category">
+            <p><span class="sign2">Sign 2: </span> <span> {{ post.sign2 }} </span></p>
+            <!-- <p class="value">{{ post.sign2 }}</p> -->
+          </div>
+
+          <div class="category">
+            <p><span class="total">Total: </span> <span> {{ post.total }} </span></p>
+            <!-- <p class="value">{{ post.total }}</p> -->
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -181,9 +196,12 @@ p.text {
   text-align: center;
   font-size: 24px;
   font-weight: bold;
-  color: grey;
   margin: 0;
   padding: 0;
+}
+.sign1, .sign2, .total {
+  font-size: 20px;
+  font-weight: bold;
 }
 .form {
   background-color: #4CAF50;
@@ -234,5 +252,15 @@ p.text {
   background-color: #007BFF;
   color: white;
   cursor: pointer;
+}
+.grid-container {
+  display: grid;
+  /*grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));*/
+  gap: 10px;
+}
+
+.vertical-line {
+  border-left: 1px solid black;
+  height: 50px;
 }
 </style>
