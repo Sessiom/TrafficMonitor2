@@ -65,7 +65,7 @@ export default {
   },
   async created() {
     this.loading = true;
-    toast.info('Loading posts...');
+    toast.info('Loading...');
     try {
       const posts = await PostService.getPosts();
       this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -125,7 +125,6 @@ export default {
 div.container {
   margin: 0 auto;
   width: 50%;
-  text-align: left;
 }
 p.error {
   border: 1px solid red;
@@ -142,6 +141,7 @@ div.post{
   box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
   padding: 20px;
   margin: 15px;
+  margin-bottom: 30px;
 }
 .delete-button {
   position: absolute;
@@ -155,6 +155,9 @@ div.post{
   border-radius: 5px;
   cursor: pointer;
   float: right;
+}
+.delete-button:hover {
+  background-color: rgb(150, 150, 150);
 }
 
 div.created-at {
@@ -197,7 +200,6 @@ p.text {
 .create-post {
   display: grid;
   grid-template-columns: 1fr; /* Add this line */
-  margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -216,6 +218,7 @@ p.text {
 }
 
 .create-post .form-group input {
+  width: 100%;
   max-width: 95%;
   padding: 10px;
   border: 1px solid #ccc;
