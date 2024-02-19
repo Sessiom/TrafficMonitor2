@@ -1,17 +1,12 @@
-<script>
-// @ is an alias to /src
-
-</script>
-
 <template>
     <div class="content">
         <div class="card-grid">
             <div class="card">
                 <p>
-                    <button id="connectBleButton" class="connectButton"> Connect </button>
-                    <button id="disconnectBleButton" class="disconnectButton"> Disconnect </button>
+                    <button class="connectButton" @click="connectButton"> Connect </button>
+                    <button class="disconnectButton" @click="disconnectDevice"> Disconnect </button>
                 </p>
-                <p class="gray-label">Device state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
+                <p class="gray-label">Device state: <strong><span :style="{ color: bleState === 'Connected' ? '#24af37' : '#d13a30' }">{{ bleState }}</span></strong></p>
             </div>
         </div>
 
@@ -47,12 +42,166 @@
             </div>
         </div>
 
+        <div class="card-grid">
+            <div class="card">
+                <h2>Car Counts</h2>
+                <p class="reading"><span>Sign 1: </span><span id="valueContainer4">NaN</span></p>
+                <p class="reading"><span>Sign 2: </span><span id="valueContainer5">NaN</span></p>
+                <p class="reading"><span>Total: </span><span>NaN</span></p>
+                <p class="gray-label">Last reading: <span class="timestamp"></span></p>
+            </div>
+        </div>
+
     </div>
     <div class="footer">
         <p></p>
         <p></p>
     </div>
 </template>
+
+<script>
+import { useToast } from 'vue-toastification';
+const toast = useToast();
+
+export default {
+  data() {
+    return {
+      deviceName: 'ESP32',
+      bleService: '19b10000-e8f2-537e-4f6c-d104768a1214',
+      SouthCharacteristic: '19b10001-e8f2-537e-4f6c-d104768a1214',
+      RedRedCharacteristic: '19b10002-e8f2-537e-4f6c-d104768a1214',
+      NorthCharacteristic: '19b10003-e8f2-537e-4f6c-d104768a1214',
+      CarCountCharacteristic: '19b10004-e8f2-537e-4f6c-d104768a1214',
+      bleServer: null,
+      bleServiceFound: null,
+      SouthCharacteristicFound: null,
+      NorthCharacteristicFound: null,
+      CarCountCharacteristicFound: null,
+      isUpdating: false,
+      retrievedSouthValue: '',
+      retrievedNorthValue: '',
+      retrievedCarCountValue: '',
+      latestValueSent: '',
+      bleState: 'Disconnected',
+      timestampContainers: ['', '', '']
+    };
+  },
+  methods: {
+    connectButton() {
+      if (this.isWebBluetoothEnabled()) {
+        this.connectToDevice();
+      }
+    },
+    isWebBluetoothEnabled() {
+        if (!navigator.bluetooth) {
+            toast.error('Web Bluetooth API is not available in this browser/device');
+            console.log('Web Bluetooth API is not available in this browser');
+            this.bleState = "Web Bluetooth API is not available in this browser/device";
+            return false;
+        }
+        console.log('Web Bluetooth API supported in this browser.');
+        return true;
+    },
+    connectToDevice() {
+        console.log('Initializing Bluetooth...');
+        navigator.bluetooth.requestDevice({
+            filters: [{ name: this.deviceName }],
+            optionalServices: [this.bleService]
+        })
+        .then(device => {
+            console.log('Device Selected:', device.name);
+            this.bleState = 'Connected to device ' + device.name;
+            device.addEventListener('gattserverdisconnected', this.onDisconnected);
+            return device.gatt.connect();
+        })
+        .then(gattServer => {
+            this.bleServer = gattServer;
+            console.log("Connected to GATT Server");
+            return this.bleServer.getPrimaryService(this.bleService);
+        })
+        .then(service => {
+            this.bleServiceFound = service;
+            console.log("Service discovered:", service.uuid);
+            return service.getCharacteristic(this.SouthCharacteristic);
+        })
+        .then(characteristic => {
+            console.log("SouthCharacteristic discovered:", characteristic.uuid);
+            this.SouthCharacteristicFound = characteristic;
+            characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange1);
+            characteristic.startNotifications();
+            console.log("Notifications Started.");
+            return characteristic.readValue();
+        })
+        .then(value => {
+            console.log("Read South value: ", value);
+            const decodedValue = new TextDecoder().decode(value);
+            console.log("Decoded value: ", decodedValue);
+            this.retrievedSouthValue = decodedValue;
+            return this.bleServiceFound.getCharacteristic(this.NorthCharacteristic);
+        })
+        .then(characteristic => {
+            console.log("NorthCharacteristic discovered:", characteristic.uuid);
+            this.NorthCharacteristicFound = characteristic;
+            characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange2);
+            characteristic.startNotifications();
+            console.log("Notifications Started.");
+            return characteristic.readValue();
+        })
+        .then(value => {
+            console.log("Read North value: ", value);
+            const decodedValue = new TextDecoder().decode(value);
+            console.log("Decoded value: ", decodedValue);
+            this.retrievedNorthValue = decodedValue;
+            return this.bleServiceFound.getCharacteristic(this.CarCountCharacteristic);
+        })
+        .then(characteristic => {
+            console.log("CarCountCharacteristic discovered:", characteristic.uuid);
+            this.CarCountCharacteristicFound = characteristic;
+            characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange3);
+            characteristic.startNotifications();
+            console.log("Notifications Started.");
+            return characteristic.readValue();
+        })
+        .then(value => {
+            console.log("Read CarCount value: ", value);
+            const decodedValue = new TextDecoder().decode(value);
+            console.log("Decoded value: ", decodedValue);
+            this.retrievedCarCountValue = decodedValue;
+        })
+        .catch(error => {
+        console.log('Error: ', error);
+        })
+    },
+    onDisconnected() {
+      // Your code here
+    },
+    handleCharacteristicChange1() {
+      // Your code here
+    },
+    handleCharacteristicChange2() {
+      // Your code here
+    },
+    handleCharacteristicChange3() {
+      // Your code here
+    },
+    writeOnCharacteristic() {
+      // Your code here
+    },
+    disconnectDevice() {
+      // Your code here
+    },
+    getDateTime() {
+      // Your code here
+    }
+  },
+  mounted() {
+    // Add event listeners here
+  },
+  beforeUnmounted() {
+    // Remove event listeners here
+  }
+};
+</script>
 
 <style scoped>
 .content {
