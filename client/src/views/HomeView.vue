@@ -47,7 +47,7 @@
                 <h2>Car Counts</h2>
                 <p class="reading"><span>Sign 1: </span><span id="valueContainer4">{{ retrievedSign1CarCountValue }}</span></p>
                 <p class="reading"><span>Sign 2: </span><span id="valueContainer5">{{ retrievedSign2CarCountValue }}</span></p>
-                <p class="reading"><span>Total: </span><span>NaN</span></p>
+                <p class="reading"><span>Total: </span><span> {{ total }}</span></p>
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[3] }}</span></p>
             </div>
         </div>
@@ -350,9 +350,8 @@ export default {
 
         var datetime = month + "/" + day + "/" + year + " at " + hours + ":" + minutes + ":" + seconds;
         return datetime;
-    }
-  },
-  async createPost() { 
+    },
+    async createPost() { 
       try {
         toast.info('Working...');
         await PostService.insertPost(this.sign1, this.sign2, this.total);  //calculated in computed property
@@ -366,6 +365,7 @@ export default {
       this.sign1 = 0;
       this.sign2 = 0;
       this.total = 0;
+    },
   },
   mounted() {
     // Add event listeners here
