@@ -28,8 +28,8 @@
 
             <div class="card">
                 <h2>Sign 2 </h2>
-                <p class="reading"><span id="valueContainer1">NaN</span></p>
-                <p class="gray-label">Last reading: <span class="timestamp"></span></p>
+                <p class="reading"><span id="valueContainer1">{{ retrievedNorthValue }}</span></p>
+                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[1] }}</span></p>
             </div>
 
         </div>
@@ -37,8 +37,8 @@
         <div class="card-grid">
             <div class="card">
                 <h2>Cars In Lane</h2>
-                <p class="reading"><span id="valueContainer3">NaN</span></p>
-                <p class="gray-label">Last reading: <span class="timestamp"></span></p>
+                <p class="reading"><span id="valueContainer3">{{ retrievedCarCountValue }}</span></p>
+                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[2] }}</span></p>
             </div>
         </div>
 
@@ -78,9 +78,9 @@ export default {
       NorthCharacteristicFound: null,
       CarCountCharacteristicFound: null,
       isUpdating: false,
-      retrievedSouthValue: '',
-      retrievedNorthValue: '',
-      retrievedCarCountValue: '',
+      retrievedSouthValue: 'NaN',
+      retrievedNorthValue: 'NaN',
+      retrievedCarCountValue: 'NaN',
       latestValueSent: '',
       bleState: 'Disconnected',
       timestampContainers: ['', '', '']
@@ -194,10 +194,32 @@ export default {
         }
     },
     handleCharacteristicChange2() {
-      // Your code here
+        if(this.isUpdating) {
+            this.retrievedNorthValue = "STOP";
+            return;
+        }
+        else{
+            const newValueReceived = new TextDecoder().decode(event.target.value);
+            console.log("North Characteristic value changed: ", newValueReceived);
+            if (newValueReceived === "1") {
+                this.retrievedNorthValue = "SLOW";
+            } else {
+                this.retrievedNorthValue = "STOP";
+            }
+            this.timestampContainers[1] = this.getDateTime();
+        }
     },
     handleCharacteristicChange3() {
-      // Your code here
+        if(this.isUpdating) {
+            this.retrievedCarCountValue = "0";
+            return;
+        }
+        else{
+        const newValueReceived = new TextDecoder().decode(event.target.value);
+        console.log("Car Count Characteristic value changed: ", newValueReceived);
+        this.retrievedCarCountValue = newValueReceived;
+        this.timestampContainers[2] = this.getDateTime();
+        }
     },
 
     onButton() {
@@ -233,10 +255,42 @@ export default {
         }
     },
     disconnectDevice() {
-      // Your code here
+        console.log("Disconnect Device.");
+        if (this.bleServer && this.bleServer.connected) {
+            if (this.SouthCharacteristicFound) {
+                this.SouthCharacteristicFound.stopNotifications()
+                    .then(() => {
+                        console.log("Notifications Stopped");
+                        return this.bleServer.disconnect();
+                    })
+                    .then(() => {
+                        console.log("Device Disconnected");
+                        this.bleStateContainer = "Device Disconnected";
+
+                    })
+                    .catch(error => {
+                        console.log("An error occurred:", error);
+                    });
+            } else {
+                console.log("No characteristic found to disconnect.");
+            }
+        } else {
+            // Throw an error if Bluetooth is not connected
+            console.error("Bluetooth is not connected.");
+            window.alert("Bluetooth is not connected.")
+        }
     },
     getDateTime() {
-      // Your code here
+        var currentdate = new Date();
+        var day = ("00" + currentdate.getDate()).slice(-2); // Convert day to string and slice
+        var month = ("00" + (currentdate.getMonth() + 1)).slice(-2);
+        var year = currentdate.getFullYear();
+        var hours = ("00" + currentdate.getHours()).slice(-2);
+        var minutes = ("00" + currentdate.getMinutes()).slice(-2);
+        var seconds = ("00" + currentdate.getSeconds()).slice(-2);
+
+        var datetime = month + "/" + day + "/" + year + " at " + hours + ":" + minutes + ":" + seconds;
+        return datetime;
     }
   },
   mounted() {
