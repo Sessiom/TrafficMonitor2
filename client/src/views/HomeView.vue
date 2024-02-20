@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import PostService from '../PostService';
 import { useToast } from 'vue-toastification';
 const toast = useToast();
 
@@ -81,6 +82,9 @@ export default {
       CarCountCharacteristicFound: null,
       Sign1CarCountCharacteristicFound: null,
       Sign2CarCountCharacteristicFound: null,
+      sign1: 0,
+      sign2: 0,
+      total: 0,
       isUpdating: false,
       retrievedSouthValue: 'NaN',
       retrievedNorthValue: 'NaN',
@@ -91,6 +95,18 @@ export default {
       bleState: 'Disconnected',
       timestampContainers: ['', '', '', '']
     };
+  },
+  computed: {
+    calculatedTotal() {
+      let sign1 = parseInt(this.retrievedSign1CarCountValue, 10); 
+      let sign2 = parseInt(this.retrievedSign2CarCountValue, 10);
+      return sign1 + sign2;
+    }
+  },
+  watch: {
+    calculatedTotal(newTotal) {
+        this.total = newTotal;
+    }
   },
   methods: {
     connectButton() {
@@ -255,12 +271,15 @@ export default {
         const newValueReceived = new TextDecoder().decode(event.target.value);
         console.log("Sign1 Car Count Characteristic value changed: ", newValueReceived);
         this.retrievedSign1CarCountValue = newValueReceived; 
+        this.sign1 = parseInt(this.retrievedSign1CarCountValue, 10);
     },
     handleCharacteristicChange5(event) {
         const newValueReceived = new TextDecoder().decode(event.target.value);
         console.log("Sign2 Car Count Characteristic value changed: ", newValueReceived);
         this.retrievedSign2CarCountValue = newValueReceived;
+        this.sign2 = parseInt(this.retrievedSign2CarCountValue, 10);
         this.timestampContainers[3] = this.getDateTime();
+
     },
     onButton() {
       this.writeOnCharacteristic(1);
@@ -308,11 +327,13 @@ export default {
             .then(() => {
             console.log("Device Disconnected");
             this.bleState = "Device Disconnected";
-            })
+            if(this.total > 0){
+                this.createPost();                  // On Disconnect, create a post if total is greater than 0
+            }})
             .catch(error => {
             console.log("An error occurred:", error);
             });
-        } else {
+        } else { 
             // Throw an error if Bluetooth is not connected
             console.error("Bluetooth is not connected.");
             window.alert("Bluetooth is not connected.")
@@ -330,6 +351,21 @@ export default {
         var datetime = month + "/" + day + "/" + year + " at " + hours + ":" + minutes + ":" + seconds;
         return datetime;
     }
+  },
+  async createPost() { 
+      try {
+        toast.info('Working...');
+        await PostService.insertPost(this.sign1, this.sign2, this.total);  //calculated in computed property
+        const posts = await PostService.getPosts();
+        this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        toast.clear();
+        toast.success('New post added.');
+      } catch (error) {
+        toast.error('Failed to add new post.');
+      }
+      this.sign1 = 0;
+      this.sign2 = 0;
+      this.total = 0;
   },
   mounted() {
     // Add event listeners here
