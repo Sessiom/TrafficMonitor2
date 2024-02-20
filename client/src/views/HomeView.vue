@@ -257,23 +257,19 @@ export default {
     disconnectDevice() {
         console.log("Disconnect Device.");
         if (this.bleServer && this.bleServer.connected) {
-            if (this.SouthCharacteristicFound) {
-                this.SouthCharacteristicFound.stopNotifications()
-                    .then(() => {
-                        console.log("Notifications Stopped");
-                        return this.bleServer.disconnect();
-                    })
-                    .then(() => {
-                        console.log("Device Disconnected");
-                        this.bleStateContainer = "Device Disconnected";
-
-                    })
-                    .catch(error => {
-                        console.log("An error occurred:", error);
-                    });
-            } else {
-                console.log("No characteristic found to disconnect.");
-            }
+            Promise.all([
+            this.SouthCharacteristicFound?.stopNotifications().then(() => console.log("SouthCharacteristic notifications stopped")),
+            this.NorthCharacteristicFound?.stopNotifications().then(() => console.log("NorthCharacteristic notifications stopped")),
+            this.CarCountCharacteristicFound?.stopNotifications().then(() => console.log("CarCountCharacteristic notifications stopped"))
+            ])
+            .then(() => this.bleServer.disconnect())
+            .then(() => {
+            console.log("Device Disconnected");
+            this.bleState = "Device Disconnected";
+            })
+            .catch(error => {
+            console.log("An error occurred:", error);
+            });
         } else {
             // Throw an error if Bluetooth is not connected
             console.error("Bluetooth is not connected.");
@@ -297,7 +293,7 @@ export default {
     // Add event listeners here
   },
   beforeUnmounted() {
-    // Remove event listeners here
+    this.disconnectDevice();
   }
 };
 </script>
