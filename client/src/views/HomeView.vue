@@ -13,8 +13,8 @@
         <div class="card-grid">
             <div class="card">
                 <h2>Red Red Override</h2>
-                <button id="onButton" class="onButton">ON</button>
-                <button id="offButton" class="offButton">OFF</button>
+                <button id="onButton" class="onButton" @click="onButton">ON</button>
+                <button id="offButton" class="offButton" @click="offButton">OFF</button>
                 <p class="gray-label">Last value sent: <span id="valueSent">{{ latestValueSent }}</span></p>
             </div>
         </div>
@@ -310,7 +310,7 @@ export default {
             });
         } else {
             console.error ("Bluetooth is not connected. Cannot write to characteristic.")
-            window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
+            window.alert("Bluetooth is not connected. Cannot write to characteristic. \nConnect to BLE first")
         }
     },
     disconnectDevice() {
