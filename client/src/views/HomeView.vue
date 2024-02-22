@@ -353,11 +353,9 @@ export default {
     },
     async createPost() { 
       try {
-        toast.info('Working...');
         await PostService.insertPost(this.sign1, this.sign2, this.total);  //calculated in computed property
         const posts = await PostService.getPosts();
         this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        toast.clear();
         toast.success('New post added.');
       } catch (error) {
         toast.error('Failed to add new post.');

@@ -4,10 +4,24 @@ require('dotenv').config();
 
 const router = express.Router();
 
+let dbClient;
+
+async function initializeDbConnection() {
+  dbClient = await mongodb.MongoClient.connect(process.env.MONGODB_URI, {});
+}
+
+initializeDbConnection();
+
+async function loadPostsCollection() {
+  return dbClient.db(process.env.MONGODB_NAME).collection(process.env.MONGODB_COLLECTION);
+}
+
 // Get Posts
 router.get('/', async (req, res) => {
   const posts = await loadPostsCollection();
-  res.send(await posts.find({}).toArray());
+  const limit = parseInt(req.query.limit) || 10; // default limit to 10 documents
+  const skip = parseInt(req.query.skip) || 0; // default skip to 0 documents
+  res.send(await posts.find({}).limit(limit).skip(skip).toArray());
 });
 
 // Add Post
@@ -44,11 +58,5 @@ router.delete('/:id', async (req, res) => {
   res.status(200).send();
 });
 
-async function loadPostsCollection() {
-  const client = await mongodb.MongoClient.connect(process.env.MONGODB_URI, {
-  });
-
-  return client.db(process.env.MONGODB_NAME).collection(process.env.MONGODB_COLLECTION);
-}
 
 module.exports = router;

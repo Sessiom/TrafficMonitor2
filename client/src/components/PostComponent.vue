@@ -80,14 +80,11 @@ export default {
   },
   async created() {
     this.loading = true;
-    toast.info('Loading...');
     try {
       const posts = await PostService.getPosts();
       this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      toast.clear();
     } catch (err) {
       this.error = err.message;
-      toast.clear();
       toast.error('Failed to load posts.');
     } finally {
       this.loading = false;
@@ -106,11 +103,9 @@ export default {
   methods: {
     async createPost() {
       try {
-        toast.info('Working...');
         await PostService.insertPost(this.sign1, this.sign2, this.total);
         const posts = await PostService.getPosts();
         this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        toast.clear();
         toast.success('New post added.');
       } catch (error) {
         toast.error('Failed to add new post.');
@@ -121,11 +116,9 @@ export default {
   },
     async deletePost(id) {
       try {
-        toast.info('Working...');
         await PostService.deletePost(id);
         const posts = await PostService.getPosts();
         this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        toast.clear();
         toast.success('Post deleted.');
       } catch (error) {
         toast.error('Failed to delete post.');
