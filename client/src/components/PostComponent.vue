@@ -26,7 +26,7 @@
       </div>
       <div class="form-group">
         <label for="create-duration">Duration</label>
-        <input type="string" id="create-duration" :value="duration" placeholder="Duration" readonly>
+        <input type="string" id="create-duration" :value="displayTotalTime" placeholder="Duration" readonly>
       </div>
       <div class="form-group">
         <label for="create-location">Location</label>
@@ -108,11 +108,12 @@ export default {
       error: '',
       startTime: '',
       endTime: '',
-      duration: '',
+      displayTotalTime: '',
       location: '',
       sign1: 0,
       sign2: 0,
       total: 0,
+      duration: 0,
       loading: false,
       showForm: false, // New data property to control form visibility
     }
@@ -133,23 +134,34 @@ export default {
     calculatedTotal() {
       return this.sign1 + this.sign2;
     },
-    calculatedDuration() {
+    durationInSeconds() {
       const start = new Date(this.startTime);
       const end = new Date(this.endTime);
 
-      const totalMinutes = Math.floor((end - start) / (1000*60));
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
+      return Math.floor((end - start) / 1000);
+    },
+    displayDuration() {
+      const hours = Math.floor(this.duration / 3600);
+      const minutes = Math.floor((this.duration % 3600) / 60);
+      const seconds = this.duration % 60;
 
-      return `${hours}h:${minutes}m`;
+      const paddedHours = String(hours).padStart(2, '0');
+      const paddedMinutes = String(minutes).padStart(2, '0');
+      const paddedSeconds = String(seconds).padStart(2, '0');
+
+      return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
     }
   },
   watch: {
     calculatedTotal(newTotal) {
       this.total = newTotal;
     },
-    calculatedDuration(newDuration) {
-      this.duration = newDuration;
+    durationInSeconds(newDurationInSeconds) {
+      //console.log(newDurationInSeconds);
+      this.duration = newDurationInSeconds;
+    },
+    displayDuration(newDuration) {
+      this.displayTotalTime = newDuration;
     }
   },
   methods: {
