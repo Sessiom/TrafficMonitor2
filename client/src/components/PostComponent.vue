@@ -17,6 +17,22 @@
         <input type="number" id="create-total" :value="total" placeholder="Total number of cars" readonly>
       </div>
       <div class="form-group">
+        <label for="create-start">Start</label>
+        <input type="datetime-local" id="create-start" v-model="startTime">
+      </div>
+      <div class="form-group">
+        <label for="create-end">End</label>
+        <input type="datetime-local" id="create-end" v-model="endTime">
+      </div>
+      <div class="form-group">
+        <label for="create-duration">Duration</label>
+        <input type="string" id="create-duration" :value="duration" placeholder="Duration" readonly>
+      </div>
+      <div class="form-group">
+        <label for="create-location">Location</label>
+        <input type="text" id="create-location" v-model="location" placeholder="Location">
+      </div>
+      <div class="form-group">
         <button type="submit">Submit</button>
       </div>
     </form>
@@ -38,20 +54,39 @@
           }}
         </p>
         <div class="grid-container">
+          <div> 
+            <div>
+              <p><span class="category">Sign 1: </span> <span> {{ post.sign1 }} </span></p>
+              <!-- <p class="value">{{ post.sign1 }}</p> -->
+            </div>
 
-          <div class = "category">
-            <p><span class="sign1">Sign 1: </span> <span> {{ post.sign1 }} </span></p>
-            <!-- <p class="value">{{ post.sign1 }}</p> -->
+            <div>
+              <p><span class="category">Sign 2: </span> <span> {{ post.sign2 }} </span></p>
+              <!-- <p class="value">{{ post.sign2 }}</p> -->
+            </div>
+
+            <div>
+              <p><span class="category">Total: </span> <span> {{ post.total }} </span></p>
+              <!-- <p class="value">{{ post.total }}</p> -->
+            </div>
+          </div>
+          
+          <div> 
+            <div>
+              <p><span class="category">Start: </span> <span> {{  }} </span></p>
+            </div>
+
+            <div>
+              <p><span class="category">End: </span> <span> {{  }} </span></p>
+            </div>
+
+            <div>
+              <p><span class="category">Duration: </span> <span> {{  }} </span></p>
+            </div>
           </div>
 
-          <div class="category">
-            <p><span class="sign2">Sign 2: </span> <span> {{ post.sign2 }} </span></p>
-            <!-- <p class="value">{{ post.sign2 }}</p> -->
-          </div>
-
-          <div class="category">
-            <p><span class="total">Total: </span> <span> {{ post.total }} </span></p>
-            <!-- <p class="value">{{ post.total }}</p> -->
+          <div>
+            <p><span class="category">Location: </span> <span> {{  }} </span></p>
           </div>
 
         </div>
@@ -71,6 +106,10 @@ export default {
     return {
       posts: [],
       error: '',
+      startTime: '',
+      endTime: '',
+      duration: '',
+      location: '',
       sign1: 0,
       sign2: 0,
       total: 0,
@@ -93,11 +132,24 @@ export default {
   computed: {
     calculatedTotal() {
       return this.sign1 + this.sign2;
+    },
+    calculatedDuration() {
+      const start = new Date(this.startTime);
+      const end = new Date(this.endTime);
+
+      const totalMinutes = Math.floor((end - start) / (1000*60));
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      return `${hours}h:${minutes}m`;
     }
   },
   watch: {
     calculatedTotal(newTotal) {
       this.total = newTotal;
+    },
+    calculatedDuration(newDuration) {
+      this.duration = newDuration;
     }
   },
   methods: {
@@ -192,7 +244,7 @@ p.text {
   margin: 0;
   padding: 0;
 }
-.sign1, .sign2, .total {
+.category {
   font-size: 20px;
   font-weight: bold;
 }
@@ -248,7 +300,7 @@ p.text {
 }
 .grid-container {
   display: grid;
-  /*grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));*/
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 10px;
 }
 
