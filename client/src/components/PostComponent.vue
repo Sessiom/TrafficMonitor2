@@ -113,7 +113,7 @@ export default {
       sign1: 0,
       sign2: 0,
       total: 0,
-      //duration: 0,
+      duration: 0,
       loading: false,
       showForm: false, // New data property to control form visibility
     }
@@ -134,12 +134,12 @@ export default {
     calculatedTotal() {
       return this.sign1 + this.sign2;
     },
-    /*durationInSeconds() {
+    durationInSeconds() {
       const start = new Date(this.startTime);
       const end = new Date(this.endTime);
 
       return Math.floor((end - start) / 1000);
-    },*/
+    },
     displayDuration() {
       const hours = Math.floor(this.duration / 3600);
       const minutes = Math.floor((this.duration % 3600) / 60);
@@ -156,10 +156,10 @@ export default {
     calculatedTotal(newTotal) {
       this.total = newTotal;
     },
-    /*durationInSeconds(newDurationInSeconds) {
+    durationInSeconds(newDurationInSeconds) {
       //console.log(newDurationInSeconds);
       this.duration = newDurationInSeconds;
-    },*/
+    },
     displayDuration(newDuration) {
       this.displayTotalTime = newDuration;
     }

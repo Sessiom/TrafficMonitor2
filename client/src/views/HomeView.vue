@@ -82,6 +82,10 @@ export default {
       CarCountCharacteristicFound: null,
       Sign1CarCountCharacteristicFound: null,
       Sign2CarCountCharacteristicFound: null,
+      startTime: '',
+      endTime: '',
+      displayTotalTime: '',
+      location: '',
       sign1: 0,
       sign2: 0,
       total: 0,
@@ -101,11 +105,25 @@ export default {
       let sign1 = parseInt(this.retrievedSign1CarCountValue, 10); 
       let sign2 = parseInt(this.retrievedSign2CarCountValue, 10);
       return sign1 + sign2;
-    }
+    },
+    duration() {
+        if (this.startTime && this.endTime) {
+        const durationMs = this.endTime - this.startTime; // duration in milliseconds
+        const durationSec = Math.floor(durationMs / 1000); // convert to seconds
+        const hours = Math.floor(durationSec / 3600);
+        const minutes = Math.floor((durationSec % 3600) / 60);
+        const seconds = durationSec % 60;
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+      return '00:00:00';
+    },
   },
   watch: {
     calculatedTotal(newTotal) {
         this.total = newTotal;
+    },
+    duration(newDuration) {
+        this.displayTotalTime = newDuration;
     }
   },
   methods: {
@@ -134,6 +152,8 @@ export default {
             console.log('Device Selected:', device.name);
             this.bleState = 'Connected to device ' + device.name;
             device.addEventListener('gattserverdisconnected', this.onDisconnected);
+            this.startTime = new Date();
+            this.location = "1 Hawk Dr, New Paltz, NY 12561";
             return device.gatt.connect();
         })
         .then(gattServer => {
@@ -314,6 +334,7 @@ export default {
         }
     },
     disconnectDevice() {
+        this.endTime = new Date();
         console.log("Disconnect Device.");
         if (this.bleServer && this.bleServer.connected) {
             Promise.all([
@@ -353,7 +374,7 @@ export default {
     },
     async createPost() { 
       try {
-        await PostService.insertPost(this.sign1, this.sign2, this.total);  //calculated in computed property
+        await PostService.insertPost(this.sign1, this.sign2, this.total, this.startTime, this.endTime, this.displayTotalTime, this.location);  //calculated in computed property
         const posts = await PostService.getPosts();
         this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         toast.success('New post added.');
