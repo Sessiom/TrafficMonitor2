@@ -19,11 +19,15 @@ class PostService {
     }
 
     // Create Post
-    static insertPost(sign1, sign2, total) {         // added title parameter
+    static insertPost(sign1, sign2, total, start, end, duration, location) {         // added title parameter
         return axios.post(url, {
             sign1,
             sign2,
-            total
+            total,
+            start,
+            end,
+            duration,
+            location
         });
     }
 

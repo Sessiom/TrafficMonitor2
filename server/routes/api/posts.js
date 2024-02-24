@@ -31,7 +31,11 @@ router.post('/', async (req, res) => {
     createdAt: new Date(),
     sign1: req.body.sign1,
     sign2: req.body.sign2,
-    total: req.body.total
+    total: req.body.total,
+    start: req.body.start,
+    end: req.body.end,
+    duration: req.body.duration,
+    location: req.body.location
   });
   res.status(201).send();
 });
@@ -44,7 +48,11 @@ router.patch('/:id', async (req, res) => {
     { $set: {
         sign1: req.body.sign1,
         sign2: req.body.sign2,
-        total: req.body.total
+        total: req.body.total,
+        start: req.body.start,
+        end: req.body.end,
+        duration: req.body.duration,
+        location: req.body.location
       }
     }
   );

@@ -73,20 +73,20 @@
           
           <div> 
             <div>
-              <p><span class="category">Start: </span> <span> {{  }} </span></p>
+              <p><span class="category">Start: </span> <span> {{ post.start }} </span></p>
             </div>
 
             <div>
-              <p><span class="category">End: </span> <span> {{  }} </span></p>
+              <p><span class="category">End: </span> <span> {{ post.end }} </span></p>
             </div>
 
             <div>
-              <p><span class="category">Duration: </span> <span> {{  }} </span></p>
+              <p><span class="category">Duration: </span> <span> {{ post.duration }} </span></p>
             </div>
           </div>
 
           <div>
-            <p><span class="category">Location: </span> <span> {{  }} </span></p>
+            <p><span class="category">Location: </span> <span> {{ post.location }} </span></p>
           </div>
 
         </div>
@@ -113,7 +113,7 @@ export default {
       sign1: 0,
       sign2: 0,
       total: 0,
-      duration: 0,
+      //duration: 0,
       loading: false,
       showForm: false, // New data property to control form visibility
     }
@@ -134,12 +134,12 @@ export default {
     calculatedTotal() {
       return this.sign1 + this.sign2;
     },
-    durationInSeconds() {
+    /*durationInSeconds() {
       const start = new Date(this.startTime);
       const end = new Date(this.endTime);
 
       return Math.floor((end - start) / 1000);
-    },
+    },*/
     displayDuration() {
       const hours = Math.floor(this.duration / 3600);
       const minutes = Math.floor((this.duration % 3600) / 60);
@@ -156,10 +156,10 @@ export default {
     calculatedTotal(newTotal) {
       this.total = newTotal;
     },
-    durationInSeconds(newDurationInSeconds) {
+    /*durationInSeconds(newDurationInSeconds) {
       //console.log(newDurationInSeconds);
       this.duration = newDurationInSeconds;
-    },
+    },*/
     displayDuration(newDuration) {
       this.displayTotalTime = newDuration;
     }
@@ -167,7 +167,7 @@ export default {
   methods: {
     async createPost() {
       try {
-        await PostService.insertPost(this.sign1, this.sign2, this.total);
+        await PostService.insertPost(this.sign1, this.sign2, this.total, this.startTime, this.endTime, this.displayTotalTime, this.location);
         const posts = await PostService.getPosts();
         this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         toast.success('New post added.');
@@ -177,6 +177,10 @@ export default {
       this.sign1 = 0;
       this.sign2 = 0;
       this.total = 0;
+      this.startTime = '';
+      this.endTime = '';
+      this.displayTotalTime = '';
+      this.location = '';
   },
     async deletePost(id) {
       try {
