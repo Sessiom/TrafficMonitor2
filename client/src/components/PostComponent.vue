@@ -46,7 +46,7 @@
         v-bind:item="post"
         v-bind:index="index"
         v-bind:key="post._id">
-        <button class ="delete-button" v-on:click="deletePost(post._id)"><i class="fas fa-trash"></i></button>
+        <!--<button class ="delete-button" v-on:click="deletePost(post._id)"><i class="fas fa-trash"></i></button>-->
         <p class="date">
           {{
             post.start ? post.start.split('T')[0] : ''
