@@ -1,6 +1,7 @@
 <template>
   <div class = "container">
-    <div style="text-align: center;">
+    <div class="options">
+      <input class="search" type="text" v-model="search" placeholder="Search by location">
       <button class="form" @click="showForm = !showForm">Enter Manually</button>
     </div>
     <form @submit.prevent="createPost" v-if="showForm" class="create-post">
@@ -41,7 +42,7 @@
     <div v-if="loading">Loading...</div>
     <div class = "posts-container" v-else>
       <div class="post"
-        v-for="(post, index) in posts"
+        v-for="(post, index) in filteredPosts"
         v-bind:item="post"
         v-bind:index="index"
         v-bind:key="post._id">
@@ -49,6 +50,9 @@
         <p class="date">
           {{
             post.start ? post.start.split('T')[0] : ''
+            /*(new Date(post.start).getMonth() + 1) + '/' +
+            new Date(post.start).getDate() + '/' +
+            new Date(post.start).getFullYear()*/
           }}
         </p>
         <div class="grid-container">
@@ -102,6 +106,7 @@ export default {
   name: 'PostComponent',
   data() {
     return {
+      search: '',
       posts: [],
       error: '',
       startTime: '',
@@ -128,6 +133,11 @@ export default {
     }
   },
   computed: {
+    filteredPosts() {
+      return this.posts.filter(post => {
+        return post.location.toLowerCase().includes(this.search.toLowerCase());
+      });
+    },
     calculatedTotal() {
       return this.sign1 + this.sign2;
     },
@@ -195,6 +205,8 @@ p.error {
   margin-bottom: 15px;
 }
 
+
+
 div.post{
   position: relative;
   text-align: left;
@@ -250,6 +262,14 @@ p.text {
   font-size: 20px;
   font-weight: bold;
 }
+.search {
+  padding: 10px;
+  width: 80%;
+  margin: 20px 0;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 .form {
   background-color: #4CAF50;
   color: white;
@@ -299,6 +319,9 @@ p.text {
   background-color: #007BFF;
   color: white;
   cursor: pointer;
+}
+.create-post button:hover {
+  background-color: #0056b3;
 }
 .grid-container {
   display: grid;
