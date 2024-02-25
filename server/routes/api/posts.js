@@ -32,8 +32,8 @@ router.post('/', async (req, res) => {
     sign1: req.body.sign1,
     sign2: req.body.sign2,
     total: req.body.total,
-    start: req.body.start,
-    end: req.body.end,
+    start: new Date(req.body.start),
+    end: new Date(req.body.end),
     duration: req.body.duration,
     location: req.body.location
   });

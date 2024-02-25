@@ -48,9 +48,7 @@
         <button class ="delete-button" v-on:click="deletePost(post._id)"><i class="fas fa-trash"></i></button>
         <p class="date">
           {{
-            (new Date(post.createdAt).getMonth() + 1) + '/' +
-            new Date(post.createdAt).getDate() + '/' +
-            new Date(post.createdAt).getFullYear()
+            post.start ? post.start.split('T')[0] : ''
           }}
         </p>
         <div class="grid-container">
@@ -73,11 +71,11 @@
           
           <div> 
             <div>
-              <p><span class="category">Start: </span> <span> {{ post.start }} </span></p>
+              <p><span class="category">Start: </span> <span> {{ post.start.split('.0')[0] }} </span></p>
             </div>
 
             <div>
-              <p><span class="category">End: </span> <span> {{ post.end }} </span></p>
+              <p><span class="category">End: </span> <span> {{ post.end.split('.0')[0] }} </span></p>
             </div>
 
             <div>
@@ -113,7 +111,6 @@ export default {
       sign1: 0,
       sign2: 0,
       total: 0,
-      duration: 0,
       loading: false,
       showForm: false, // New data property to control form visibility
     }
@@ -122,7 +119,7 @@ export default {
     this.loading = true;
     try {
       const posts = await PostService.getPosts();
-      this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      this.posts = posts.sort((a, b) => new Date(b.start) - new Date(a.start));
     } catch (err) {
       this.error = err.message;
       toast.error('Failed to load posts.');
@@ -134,40 +131,29 @@ export default {
     calculatedTotal() {
       return this.sign1 + this.sign2;
     },
-    durationInSeconds() {
-      const start = new Date(this.startTime);
-      const end = new Date(this.endTime);
+    calculatedDuration() {
+      const duration = new Date(this.endTime) - new Date(this.startTime);
 
-      return Math.floor((end - start) / 1000);
+      const seconds = Math.floor(duration / 1000);
+      const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
+      const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+      const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
+
+      return `${hours}:${minutes}:${remainingSeconds}`;
     },
-    displayDuration() {
-      const hours = Math.floor(this.duration / 3600);
-      const minutes = Math.floor((this.duration % 3600) / 60);
-      const seconds = this.duration % 60;
-
-      const paddedHours = String(hours).padStart(2, '0');
-      const paddedMinutes = String(minutes).padStart(2, '0');
-      const paddedSeconds = String(seconds).padStart(2, '0');
-
-      return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
-    }
   },
   watch: {
     calculatedTotal(newTotal) {
       this.total = newTotal;
     },
-    durationInSeconds(newDurationInSeconds) {
-      //console.log(newDurationInSeconds);
-      this.duration = newDurationInSeconds;
-    },
-    displayDuration(newDuration) {
+    calculatedDuration(newDuration) {
       this.displayTotalTime = newDuration;
-    }
+    },
   },
   methods: {
     async createPost() {
       try {
-        await PostService.insertPost(this.sign1, this.sign2, this.total, this.startTime, this.endTime, this.displayTotalTime, this.location);
+        await PostService.insertPost(this.sign1, this.sign2, this.total, new Date(this.startTime), new Date(this.endTime), this.displayTotalTime, this.location);
         const posts = await PostService.getPosts();
         this.posts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         toast.success('New post added.');
