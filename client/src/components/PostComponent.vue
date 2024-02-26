@@ -2,7 +2,7 @@
   <div class = "container">
     <div class="options">
       <input class="search" type="text" v-model="search" placeholder="Search by location">
-      <button class="form" @click="showForm = !showForm">Enter Manually</button>
+      <button class="form" @click="showForm = !showForm"><i class="fas fa-caret-down"></i></button>
     </div>
     <form @submit.prevent="createPost" v-if="showForm" class="create-post">
       <div class="form-group">
@@ -264,11 +264,16 @@ p.text {
 }
 .search {
   padding: 10px;
-  width: 80%;
+  width: 100%;
   margin: 20px 0;
   margin-right: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .form {
   background-color: #4CAF50;
