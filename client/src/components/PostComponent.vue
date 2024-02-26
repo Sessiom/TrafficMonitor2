@@ -252,6 +252,7 @@ p.text {
   margin-bottom: 10px;
 }
 .date {
+  /*background-color: rgb(236, 236, 236);*/
   text-align: center;
   font-size: 24px;
   font-weight: bold;
