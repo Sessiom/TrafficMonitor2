@@ -150,7 +150,7 @@ export default {
         })
         .then(device => {
             console.log('Device Selected:', device.name);
-            this.bleState = 'Connected to device ' + device.name;
+            this.bleState = 'Connected'// to device ' + device.name;
             device.addEventListener('gattserverdisconnected', this.onDisconnected);
             this.startTime = new Date();
             this.location = "1 Hawk Dr, New Paltz, NY 12561";
