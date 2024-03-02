@@ -209,11 +209,11 @@ export default {
             const decodedValue = new TextDecoder().decode(value);
             console.log("Decoded value: ", decodedValue);
             this.retrievedCarCountValue = decodedValue;
-            return this.bleServiceFound.getCharacteristic(this.Sign1CarCountCharacteristicCharacteristic);
+            return this.bleServiceFound.getCharacteristic(this.Sign1CarCountCharacteristic);
         })
         .then(characteristic => {
             console.log("Sign1CarCountCharacteristic discovered:", characteristic.uuid);
-            this.Sign1CarCountCharacteristic = characteristic;
+            this.Sign1CarCountCharacteristicFound = characteristic;
             characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange4);
             characteristic.startNotifications();
             console.log("Notifications Started.");
@@ -228,7 +228,7 @@ export default {
         })
         .then(characteristic => {
             console.log("Sign2CarCountCharacteristic discovered:", characteristic.uuid);
-            this.Sign2CarCountCharacteristic = characteristic;
+            this.Sign2CarCountCharacteristicFound = characteristic;
             characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange5);
             characteristic.startNotifications();
             console.log("Notifications Started.");
@@ -238,8 +238,8 @@ export default {
         console.log('Error: ', error);
         })
     },
-    onDisconnected(event) {
-        console.log('Device Disconnected:', event.target.device.name);
+    onDisconnected(device) {
+        console.log('Device Disconnected:', device.name);
         this.bleState = 'Device Disconnected';
         this.connectToDevice();
     },
@@ -341,8 +341,8 @@ export default {
             this.SouthCharacteristicFound?.stopNotifications().then(() => console.log("SouthCharacteristic notifications stopped")),
             this.NorthCharacteristicFound?.stopNotifications().then(() => console.log("NorthCharacteristic notifications stopped")),
             this.CarCountCharacteristicFound?.stopNotifications().then(() => console.log("CarCountCharacteristic notifications stopped")),
-            this.Sign1CarCountCharacteristic?.stopNotifications().then(() => console.log("Sign1CarCountCharacteristic notifications stopped")),
-            this.Sign2CarCountCharacteristic?.stopNotifications().then(() => console.log("Sign2CarCountCharacteristic notifications stopped"))
+            this.Sign1CarCountCharacteristicFound?.stopNotifications().then(() => console.log("Sign1CarCountCharacteristic notifications stopped")),
+            this.Sign2CarCountCharacteristicFound?.stopNotifications().then(() => console.log("Sign2CarCountCharacteristic notifications stopped"))
             ])
             .then(() => this.bleServer.disconnect())
             .then(() => {
