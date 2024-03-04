@@ -242,13 +242,20 @@ export default {
             }
         }
         else if (characteristic.uuid === this.characteristicsFound[3].uuid) {
-            this.thirdValue = value;
+            if(this.isOverride === true){
+                this.thirdValue = '0';
+            }
+            else{
+                this.thirdValue = value;
+            }
         }
         else if (characteristic.uuid === this.characteristicsFound[4].uuid) {
             this.fourthValue = value;
+            this.sign1 = parseInt(this.fourthValue, 10);
         }
         else if (characteristic.uuid === this.characteristicsFound[5].uuid) {
             this.fifthValue = value;
+            this.sign2 = parseInt(this.fifthValue, 10);
         }
         this.timestampContainers[0] = this.getDateTime();
     },
@@ -303,6 +310,7 @@ export default {
                 .then(() => {
                     console.log("Device Disconnected");
                     this.bleState = "Disconnected";
+                    this.createPost();
                 })
                 .catch(error => {
                     console.log("An error occurred:", error);
