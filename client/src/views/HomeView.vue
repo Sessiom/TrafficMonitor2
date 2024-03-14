@@ -12,7 +12,7 @@
 
         <div class="card-grid">
             <div class="card">
-                <h2>Stop Override</h2>
+                <h2>Stop-Stop Override</h2>
                 <button id="onButton" class="onButton" @click="onButton">ON</button>
                 <button id="offButton" class="offButton" @click="offButton">OFF</button>
                 <p class="gray-label">Last value sent: <span id="valueSent">{{ latestValueSent }}</span></p>
