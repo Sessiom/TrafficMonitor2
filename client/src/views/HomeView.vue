@@ -23,7 +23,8 @@
             <div class="card">
                 <h2>Sign 1</h2>
                 <p class="reading"><span id="valueContainer2">{{ retrievedSouthValue }}</span></p>
-                <i class="fas fa-car"></i>
+                <img :src="require('@/assets/slow.png')" class="my-image"/>
+                <i class="fas fa-car" style="font-size: 30px; color: lightgray;"></i>
                 
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[0] }}</span></p>
             </div>
@@ -31,7 +32,8 @@
             <div class="card">
                 <h2>Sign 2 </h2>
                 <p class="reading"><span id="valueContainer1">{{ retrievedNorthValue }}</span></p>
-                <i class="fas fa-car"></i>
+                <img :src="require('@/assets/stop.png')" class="my-image"/>
+                <i class="fas fa-car" style="font-size: 30px; color: lightgray;"></i>
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[1] }}</span></p>
             </div>
 
@@ -414,5 +416,9 @@ button {
 }
 .reading {
     font-size: 1.8rem;
+}
+.my-image {
+  width: 100px;
+  height: 100px;
 }
 </style>
