@@ -12,7 +12,7 @@
 
         <div class="card-grid">
             <div class="card">
-                <h2>Red Red Override</h2>
+                <h2>Stop Override</h2>
                 <button id="onButton" class="onButton" @click="onButton">ON</button>
                 <button id="offButton" class="offButton" @click="offButton">OFF</button>
                 <p class="gray-label">Last value sent: <span id="valueSent">{{ latestValueSent }}</span></p>
@@ -23,12 +23,15 @@
             <div class="card">
                 <h2>Sign 1</h2>
                 <p class="reading"><span id="valueContainer2">{{ retrievedSouthValue }}</span></p>
+                <i class="fas fa-car"></i>
+                
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[0] }}</span></p>
             </div>
 
             <div class="card">
                 <h2>Sign 2 </h2>
                 <p class="reading"><span id="valueContainer1">{{ retrievedNorthValue }}</span></p>
+                <i class="fas fa-car"></i>
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[1] }}</span></p>
             </div>
 
