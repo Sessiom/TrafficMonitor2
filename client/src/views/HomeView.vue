@@ -80,7 +80,9 @@ export default {
       'dc51766b-fe18-4d8f-bb31-d49e82e59e18',      // second characteristic
       'c28e246d-5632-44d7-8fdb-124f4243eb10',      // third characteristic
       '65037f44-f9f5-48a4-8205-e9d3dc574316',      // fourth characteristic
-      '55a12381-bb3c-4731-9cde-99fcbc13fca2'       // fifth characteristic
+      '55a12381-bb3c-4731-9cde-99fcbc13fca2',      // fifth characteristic
+      'd9001af2-630c-4a44-ad33-2520d5fc93ff',      // carWaitingLeft characteristic
+      '0d044a6c-fdf5-485f-b0f0-55c8d9f3854a'       // carWaitingRight characteristic
       ],
       bleServer: null,
       bleServiceFound: null,
