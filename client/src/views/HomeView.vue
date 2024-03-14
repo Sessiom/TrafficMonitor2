@@ -40,18 +40,18 @@
         <div class="card-grid">
             <div class="card">
                 <h2>Cars In Lane</h2>
-                <p class="reading"><span id="valueContainer3">{{ retrievedCarCountValue }}</span></p>
-                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[2] }}</span></p>
+                <p class="reading"><span id="valueContainer3">{{ thirdValue }}</span></p>
+                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[0] }}</span></p>
             </div>
         </div>
 
         <div class="card-grid">
             <div class="card">
                 <h2>Car Counts</h2>
-                <p class="reading"><span>Sign 1: </span><span id="valueContainer4">{{ retrievedSign1CarCountValue }}</span></p>
-                <p class="reading"><span>Sign 2: </span><span id="valueContainer5">{{ retrievedSign2CarCountValue }}</span></p>
-                <p class="reading"><span>Total: </span><span> {{ total }}</span></p>
-                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[3] }}</span></p>
+                <p class="reading"><span>Sign 1: </span><span id="valueContainer4">{{ fourthValue }}</span></p>
+                <p class="reading"><span>Sign 2: </span><span id="valueContainer5">{{ fifthValue }}</span></p>
+                <p class="reading"><span>Total: </span><span>{{ total }}</span></p>
+                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[0] }}</span></p>
             </div>
         </div>
 
@@ -71,42 +71,40 @@ export default {
   data() {
     return {
       deviceName: 'ESP32',
-      bleService: '19b10000-e8f2-537e-4f6c-d104768a1214',
-      SouthCharacteristic: '19b10001-e8f2-537e-4f6c-d104768a1214',
-      RedRedCharacteristic: '19b10002-e8f2-537e-4f6c-d104768a1214',
-      NorthCharacteristic: '19b10003-e8f2-537e-4f6c-d104768a1214',
-      CarCountCharacteristic: '19b10004-e8f2-537e-4f6c-d104768a1214',
-      Sign1CarCountCharacteristic: '19b10005-e8f2-537e-4f6c-d104768a1214',
-      Sign2CarCountCharacteristic: '19b10006-e8f2-537e-4f6c-d104768a1214',
+      bleService: '6c744422-08a1-40c7-807a-576b64b52437',
+      characteristics: [ 
+      '2bd7866c-14ca-4191-a09f-c4985352cc96',      // LED characteristic
+      'de420cdd-4085-4066-8ee7-a6c5e28316d5',      // Sensor characteristic
+      'dc51766b-fe18-4d8f-bb31-d49e82e59e18',      // second characteristic
+      'c28e246d-5632-44d7-8fdb-124f4243eb10',      // third characteristic
+      '65037f44-f9f5-48a4-8205-e9d3dc574316',      // fourth characteristic
+      '55a12381-bb3c-4731-9cde-99fcbc13fca2'       // fifth characteristic
+      ],
       bleServer: null,
       bleServiceFound: null,
-      SouthCharacteristicFound: null,
-      NorthCharacteristicFound: null,
-      CarCountCharacteristicFound: null,
-      Sign1CarCountCharacteristicFound: null,
-      Sign2CarCountCharacteristicFound: null,
-      startTime: '',
-      endTime: '',
-      displayTotalTime: '',
+      sensorCharacteristicFound: null,
+      latestValueSent: '',
+      retrievedValue: 'NaN',
+      secondValue: 'NaN',
+      thirdValue: '0',
+      fourthValue: '0',
+      fifthValue: '0',
+      isOverride: false,
+      startTime: null,
+      endTime: null,
+      displayTotalTime: null,
       location: '',
       sign1: 0,
       sign2: 0,
       total: 0,
-      isUpdating: false,
-      retrievedSouthValue: 'NaN',
-      retrievedNorthValue: 'NaN',
-      retrievedCarCountValue: 'NaN',
-      retrievedSign1CarCountValue: 'NaN',
-      retrievedSign2CarCountValue: 'NaN',
-      latestValueSent: '',
       bleState: 'Disconnected',
-      timestampContainers: ['', '', '', '']
+      timestampContainers: ['', '', '']
     };
   },
   computed: {
     calculatedTotal() {
-      let sign1 = parseInt(this.retrievedSign1CarCountValue, 10); 
-      let sign2 = parseInt(this.retrievedSign2CarCountValue, 10);
+      let sign1 = parseInt(this.fourthValue, 10); 
+      let sign2 = parseInt(this.fifthValue, 10);
       return sign1 + sign2;
     },
     duration() {
@@ -153,10 +151,10 @@ export default {
         })
         .then(device => {
             console.log('Device Selected:', device.name);
-            this.bleState = 'Connected to device ' + device.name;
-            device.addEventListener('gattserverdisconnected', this.onDisconnected);
+            this.bleState = 'Connected'// to device ' + device.name;
             this.startTime = new Date();
             this.location = "1 Hawk Dr, New Paltz, NY 12561";
+            device.addEventListener('gattserverdisconnected', this.onDisconnected);
             return device.gatt.connect();
         })
         .then(gattServer => {
@@ -167,142 +165,107 @@ export default {
         .then(service => {
             this.bleServiceFound = service;
             console.log("Service discovered:", service.uuid);
-            return service.getCharacteristic(this.SouthCharacteristic);
+            return Promise.all(this.characteristics.map(uuid => service.getCharacteristic(uuid)))
         })
-        .then(characteristic => {
-            console.log("SouthCharacteristic discovered:", characteristic.uuid);
-            this.SouthCharacteristicFound = characteristic;
-            characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange1);
-            characteristic.startNotifications();
-            console.log("Notifications Started.");
-            return characteristic.readValue();
+        .then(characteristics => {
+            // Save the characteristics for later use
+            this.characteristicsFound = characteristics;
+            console.log("led Characteristic discovered:", characteristics[0].uuid);
+            console.log("sensor Characteristic discovered:", characteristics[1].uuid);
+            console.log("second Characteristic discovered:", characteristics[2].uuid);
+            console.log("third Characteristic discovered:", characteristics[3].uuid);
+            console.log("fourth Characteristic discovered:", characteristics[4].uuid);
+            console.log("fifth Characteristic discovered:", characteristics[5].uuid);
+            // Now you can read or write the values of the characteristics as needed
+            // For example, to read the values:
+            const sensorCharacteristic = characteristics[1];
+            const secondCharacteristic = characteristics[2];
+            const thirdCharacteristic = characteristics[3];
+            const fourthCharacteristic = characteristics[4];
+            const fifthCharacteristic = characteristics[5];
+
+            sensorCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
+            secondCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
+            thirdCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
+            fourthCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
+            fifthCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
+
+            sensorCharacteristic.startNotifications();
+            secondCharacteristic.startNotifications();
+            thirdCharacteristic.startNotifications();
+            fourthCharacteristic.startNotifications();
+            fifthCharacteristic.startNotifications();
+
+            console.log("Notifications started for Sensor Characteristic");
+            console.log("Notifications started for Second Characteristic");
+            console.log("Notifications started for Third Characteristic");
+            console.log("Notifications started for Fourth Characteristic");
+            console.log("Notifications started for Fifth Characteristic");
+            //return characteristics[1].readValue();
         })
-        .then(value => {
-            console.log("Read South value: ", value);
-            const decodedValue = new TextDecoder().decode(value);
+        /*.then(values => {
+            // Process the values here
+            console.log("Read value: ", values);
+            const decodedValue = new TextDecoder().decode(values);
             console.log("Decoded value: ", decodedValue);
-            this.retrievedSouthValue = decodedValue;
-            return this.bleServiceFound.getCharacteristic(this.NorthCharacteristic);
-        })
-        .then(characteristic => {
-            console.log("NorthCharacteristic discovered:", characteristic.uuid);
-            this.NorthCharacteristicFound = characteristic;
-            characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange2);
-            characteristic.startNotifications();
-            console.log("Notifications Started.");
-            return characteristic.readValue();
-        })
-        .then(value => {
-            console.log("Read North value: ", value);
-            const decodedValue = new TextDecoder().decode(value);
-            console.log("Decoded value: ", decodedValue);
-            this.retrievedNorthValue = decodedValue;
-            return this.bleServiceFound.getCharacteristic(this.CarCountCharacteristic);
-        })
-        .then(characteristic => {
-            console.log("CarCountCharacteristic discovered:", characteristic.uuid);
-            this.CarCountCharacteristicFound = characteristic;
-            characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange3);
-            characteristic.startNotifications();
-            console.log("Notifications Started.");
-            return characteristic.readValue();
-        })
-        .then(value => {
-            console.log("Read CarCount value: ", value);
-            const decodedValue = new TextDecoder().decode(value);
-            console.log("Decoded value: ", decodedValue);
-            this.retrievedCarCountValue = decodedValue;
-            return this.bleServiceFound.getCharacteristic(this.Sign1CarCountCharacteristicCharacteristic);
-        })
-        .then(characteristic => {
-            console.log("Sign1CarCountCharacteristic discovered:", characteristic.uuid);
-            this.Sign1CarCountCharacteristic = characteristic;
-            characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange4);
-            characteristic.startNotifications();
-            console.log("Notifications Started.");
-            return characteristic.readValue();
-        })
-        .then(value => {
-            console.log("Read Sign1CarCount value: ", value);
-            const decodedValue = new TextDecoder().decode(value);
-            console.log("Decoded value: ", decodedValue);
-            this.retrievedSign1CarCountValue = decodedValue;
-            return this.bleServiceFound.getCharacteristic(this.Sign2CarCountCharacteristic);
-        })
-        .then(characteristic => {
-            console.log("Sign2CarCountCharacteristic discovered:", characteristic.uuid);
-            this.Sign2CarCountCharacteristic = characteristic;
-            characteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicChange5);
-            characteristic.startNotifications();
-            console.log("Notifications Started.");
-            return characteristic.readValue();
-        })
+            this.retrievedValue = decodedValue;
+        })*/
         .catch(error => {
-        console.log('Error: ', error);
+            console.error("Error:", error);
         })
     },
-    onDisconnected(event) {
-        console.log('Device Disconnected:', event.target.device.name);
+    handleCharacteristicValueChanged(event) {
+        const characteristic = event.target;
+        const value = new TextDecoder().decode(characteristic.value);
+        console.log(`Value of characteristic ${characteristic.uuid}:`, value);
+
+        if (characteristic.uuid === this.characteristicsFound[1].uuid) {
+            if(this.isOverride === true){
+                this.retrievedValue = 'STOP'
+            }
+            else{
+                if(value === "1"){
+                    this.retrievedValue = "SLOW"
+                }
+                else{
+                    this.retrievedValue = "STOP"
+                }
+            }
+        } else if (characteristic.uuid === this.characteristicsFound[2].uuid) {
+            if(this.isOverride === true){
+                this.secondValue = 'STOP';
+            }
+            else{
+                if(value === "1"){
+                    this.secondValue = "SLOW"
+                }
+                else{
+                    this.secondValue = "STOP"
+                }
+            }
+        }
+        else if (characteristic.uuid === this.characteristicsFound[3].uuid) {
+            if(this.isOverride === true){
+                this.thirdValue = '0';
+            }
+            else{
+                this.thirdValue = value;
+            }
+        }
+        else if (characteristic.uuid === this.characteristicsFound[4].uuid) {
+            this.fourthValue = value;
+            this.sign1 = parseInt(this.fourthValue, 10);
+        }
+        else if (characteristic.uuid === this.characteristicsFound[5].uuid) {
+            this.fifthValue = value;
+            this.sign2 = parseInt(this.fifthValue, 10);
+        }
+        this.timestampContainers[0] = this.getDateTime();
+    },
+    onDisconnected(device) {
+        console.log('Device Disconnected:', device.name);
         this.bleState = 'Device Disconnected';
         this.connectToDevice();
-    },
-    handleCharacteristicChange1(event) {
-        if(this.isUpdating) {
-            this.retrievedSouthValue = "STOP";
-            return;
-        }
-        else{
-            const newValueReceived = new TextDecoder().decode(event.target.value);
-            console.log("South Characteristic value changed: ", newValueReceived);
-            if (newValueReceived === "1") {
-            this.retrievedSouthValue = "SLOW";
-            } else {
-            this.retrievedSouthValue = "STOP";
-            }
-            this.timestampContainers[0] = this.getDateTime();
-        }
-    },
-    handleCharacteristicChange2(event) {
-        if(this.isUpdating) {
-            this.retrievedNorthValue = "STOP";
-            return;
-        }
-        else{
-            const newValueReceived = new TextDecoder().decode(event.target.value);
-            console.log("North Characteristic value changed: ", newValueReceived);
-            if (newValueReceived === "1") {
-                this.retrievedNorthValue = "SLOW";
-            } else {
-                this.retrievedNorthValue = "STOP";
-            }
-            this.timestampContainers[1] = this.getDateTime();
-        }
-    },
-    handleCharacteristicChange3(event) {
-        if(this.isUpdating) {
-            this.retrievedCarCountValue = "0";
-            return;
-        }
-        else{
-        const newValueReceived = new TextDecoder().decode(event.target.value);
-        console.log("Car Count Characteristic value changed: ", newValueReceived);
-        this.retrievedCarCountValue = newValueReceived;
-        this.timestampContainers[2] = this.getDateTime();
-        }
-    },
-    handleCharacteristicChange4(event) {
-        const newValueReceived = new TextDecoder().decode(event.target.value);
-        console.log("Sign1 Car Count Characteristic value changed: ", newValueReceived);
-        this.retrievedSign1CarCountValue = newValueReceived; 
-        this.sign1 = parseInt(this.retrievedSign1CarCountValue, 10);
-    },
-    handleCharacteristicChange5(event) {
-        const newValueReceived = new TextDecoder().decode(event.target.value);
-        console.log("Sign2 Car Count Characteristic value changed: ", newValueReceived);
-        this.retrievedSign2CarCountValue = newValueReceived;
-        this.sign2 = parseInt(this.retrievedSign2CarCountValue, 10);
-        this.timestampContainers[3] = this.getDateTime();
-
     },
     onButton() {
       this.writeOnCharacteristic(1);
@@ -310,54 +273,52 @@ export default {
     offButton() {
       this.writeOnCharacteristic(0);
     },
-    writeOnCharacteristic(value) {
+    writeOnCharacteristic(value) {                         //TODO update this for array of characteristics
         if (this.bleServer && this.bleServer.connected) {
-            if(value === 1){
-                this.isUpdating = true;
-            }
-            else{
-                this.isUpdating = false;
-            }
-            this.bleServiceFound.getCharacteristic(this.RedRedCharacteristic)
-            .then(characteristic => {
-                console.log("Found the RedRed characteristic: ", characteristic.uuid);
-                const data = new Uint8Array([value]);
-                return characteristic.writeValue(data);
-            })
+            const characteristic = this.characteristicsFound[0];
+            console.log("Found the LED characteristic: ", characteristic.uuid);
+            const data = new Uint8Array([value]);
+            characteristic.writeValue(data)
             .then(() => {
                 this.latestValueSent = value;
-                console.log("Value written to RedRedcharacteristic:", value);
+                console.log("Value written to LEDcharacteristic:", value);
+                    if(value === 1){
+                    this.isOverride = true;
+                    }
+                    else{
+                        this.isOverride = false;
+                    }
             })
             .catch(error => {
-                console.error("Error writing to the RedRed characteristic: ", error);
+                console.error("Error writing to the LED characteristic: ", error);
             });
         } else {
             console.error ("Bluetooth is not connected. Cannot write to characteristic.")
-            window.alert("Bluetooth is not connected. Cannot write to characteristic. \nConnect to BLE first")
+            window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
         }
     },
     disconnectDevice() {
         this.endTime = new Date();
         console.log("Disconnect Device.");
         if (this.bleServer && this.bleServer.connected) {
-            Promise.all([
-            this.SouthCharacteristicFound?.stopNotifications().then(() => console.log("SouthCharacteristic notifications stopped")),
-            this.NorthCharacteristicFound?.stopNotifications().then(() => console.log("NorthCharacteristic notifications stopped")),
-            this.CarCountCharacteristicFound?.stopNotifications().then(() => console.log("CarCountCharacteristic notifications stopped")),
-            this.Sign1CarCountCharacteristic?.stopNotifications().then(() => console.log("Sign1CarCountCharacteristic notifications stopped")),
-            this.Sign2CarCountCharacteristic?.stopNotifications().then(() => console.log("Sign2CarCountCharacteristic notifications stopped"))
-            ])
-            .then(() => this.bleServer.disconnect())
-            .then(() => {
-            console.log("Device Disconnected");
-            this.bleState = "Device Disconnected";
-            if(this.total > 0){
-                this.createPost();                  // On Disconnect, create a post if total is greater than 0
-            }})
-            .catch(error => {
-            console.log("An error occurred:", error);
-            });
-        } else { 
+            const stopNotificationPromises = this.characteristicsFound
+                .filter(characteristic => characteristic && characteristic.properties.notify)
+                .map(characteristic => characteristic.stopNotifications());
+
+            Promise.all(stopNotificationPromises)
+                .then(() => {
+                    console.log("Notifications Stopped");
+                    return this.bleServer.disconnect();
+                })
+                .then(() => {
+                    console.log("Device Disconnected");
+                    this.bleState = "Disconnected";
+                    this.createPost();
+                })
+                .catch(error => {
+                    console.log("An error occurred:", error);
+                });
+        } else {
             // Throw an error if Bluetooth is not connected
             console.error("Bluetooth is not connected.");
             window.alert("Bluetooth is not connected.")
@@ -389,12 +350,6 @@ export default {
       this.total = 0;
     },
   },
-  mounted() {
-    // Add event listeners here
-  },
-  beforeUnmounted() {
-    this.disconnectDevice();
-  }
 };
 </script>
 
