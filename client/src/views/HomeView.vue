@@ -1,5 +1,10 @@
 <template>
     <div class="content">
+
+        <div class="notification" v-if ="this.bleServer"> 
+            <p><i class="fas fa-wifi fa-rotate-270"></i><i class="fas fa-wifi fa-rotate-90" style="position: relative; left: -10px;"></i>Live</p >
+        </div>
+
         <div class="card-grid">
             <div class="card">
                 <p>
@@ -22,8 +27,8 @@
         <div class="card-grid">
             <div class="card">
                 <h2>Sign 1</h2>
-                <p class="reading"><span id="valueContainer2">{{ retrievedSouthValue }}</span></p>
-                <img :src="require('@/assets/slow.png')" class="my-image"/>
+                <!-- <p class="reading"><span id="valueContainer1">{{ retrievedValue }}</span></p> -->
+                <img :src="imageSourceRetrieved" class="my-image"/>
                 <i class="fas fa-car" style="font-size: 30px; color: lightgray;"></i>
                 
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[0] }}</span></p>
@@ -31,8 +36,8 @@
 
             <div class="card">
                 <h2>Sign 2 </h2>
-                <p class="reading"><span id="valueContainer1">{{ retrievedNorthValue }}</span></p>
-                <img :src="require('@/assets/stop.png')" class="my-image"/>
+                <!-- <p class="reading"><span id="valueContainer2">{{ secondValue }}</span></p>-->
+                <img :src="imageSourceSecond" class="my-image"/>
                 <i class="fas fa-car" style="font-size: 30px; color: lightgray;"></i>
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[1] }}</span></p>
             </div>
@@ -88,8 +93,8 @@ export default {
       bleServiceFound: null,
       sensorCharacteristicFound: null,
       latestValueSent: '',
-      retrievedValue: 'NaN',
-      secondValue: 'NaN',
+      retrievedValue: 'SLOW',
+      secondValue: 'STOP',
       thirdValue: '0',
       fourthValue: '0',
       fifthValue: '0',
@@ -122,6 +127,22 @@ export default {
         }
       return '00:00:00';
     },
+    imageSourceSecond() {
+      if (this.secondValue === 'STOP') {
+        return require('@/assets/stop.png');
+      } else if (this.secondValue === 'SLOW') {
+        return require('@/assets/slow.png');
+      }
+      return '';
+    },
+    imageSourceRetrieved() {
+      if (this.retrievedValue === 'STOP') {
+        return require('@/assets/stop.png');
+      } else if (this.retrievedValue === 'SLOW') {
+        return require('@/assets/slow.png');
+      }
+      return '';
+    }
   },
   watch: {
     calculatedTotal(newTotal) {
@@ -422,5 +443,17 @@ button {
 .my-image {
   width: 100px;
   height: 100px;
+}
+.notification {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 0px 5px;
+  background-color: #f44336; /* Red */
+  color: white;
+  z-index: 1000; /* Ensure it sits on top */
+  margin: 8px;
+  border-radius: 5px;
+
 }
 </style>
