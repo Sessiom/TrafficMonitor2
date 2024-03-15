@@ -29,7 +29,7 @@
                 <h2>Sign 1</h2>
                 <!-- <p class="reading"><span id="valueContainer1">{{ retrievedValue }}</span></p> -->
                 <img :src="imageSourceRetrieved" class="my-image"/>
-                <i class="fas fa-car" style="font-size: 30px; color: lightgray;"></i>
+                <i class="fas fa-car-on" :class="carColor"></i>
                 
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[0] }}</span></p>
             </div>
@@ -38,7 +38,7 @@
                 <h2>Sign 2 </h2>
                 <!-- <p class="reading"><span id="valueContainer2">{{ secondValue }}</span></p>-->
                 <img :src="imageSourceSecond" class="my-image"/>
-                <i class="fas fa-car" style="font-size: 30px; color: lightgray;"></i>
+                <i class="fas fa-car-on" :class="carColor2"></i>
                 <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[1] }}</span></p>
             </div>
 
@@ -93,11 +93,13 @@ export default {
       bleServiceFound: null,
       sensorCharacteristicFound: null,
       latestValueSent: '',
-      retrievedValue: 'SLOW',
-      secondValue: 'STOP',
-      thirdValue: '0',
-      fourthValue: '0',
-      fifthValue: '0',
+      retrievedValue: 'SLOW',   // Sign 1
+      secondValue: 'STOP',      // Sign 2
+      thirdValue: '0',          // Cars in lane
+      fourthValue: '0',         // Sign 1 count
+      fifthValue: '0',          // Sign 2 count
+      sixthValue: 0,            // Sign 1 car waiting
+      seventhValue: 0,          // Sign 2 car waiting
       isOverride: false,
       startTime: null,
       endTime: null,
@@ -142,6 +144,12 @@ export default {
         return require('@/assets/slow.png');
       }
       return '';
+    },
+    carColor() {
+      return this.sixthValue === 1 ? 'blue' : 'lightgray';
+    },
+    carColor2() {
+      return this.seventhValue === 1 ? 'blue' : 'lightgray';
     }
   },
   watch: {
@@ -201,6 +209,8 @@ export default {
             console.log("third Characteristic discovered:", characteristics[3].uuid);
             console.log("fourth Characteristic discovered:", characteristics[4].uuid);
             console.log("fifth Characteristic discovered:", characteristics[5].uuid);
+            console.log("sixth Characteristic discovered:", characteristics[6].uuid);
+            console.log("seventh Characteristic discovered:", characteristics[7].uuid);
             // Now you can read or write the values of the characteristics as needed
             // For example, to read the values:
             const sensorCharacteristic = characteristics[1];
@@ -208,24 +218,31 @@ export default {
             const thirdCharacteristic = characteristics[3];
             const fourthCharacteristic = characteristics[4];
             const fifthCharacteristic = characteristics[5];
+            const sixthCharacteristic = characteristics[6];
+            const seventhCharacteristic = characteristics[7];
 
             sensorCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
             secondCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
             thirdCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
             fourthCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
             fifthCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
+            sixthCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
+            seventhCharacteristic.addEventListener('characteristicvaluechanged', this.handleCharacteristicValueChanged);
 
             sensorCharacteristic.startNotifications();
             secondCharacteristic.startNotifications();
             thirdCharacteristic.startNotifications();
             fourthCharacteristic.startNotifications();
             fifthCharacteristic.startNotifications();
+            sixthCharacteristic.startNotifications();
 
             console.log("Notifications started for Sensor Characteristic");
             console.log("Notifications started for Second Characteristic");
             console.log("Notifications started for Third Characteristic");
             console.log("Notifications started for Fourth Characteristic");
             console.log("Notifications started for Fifth Characteristic");
+            console.log("Notifications started for Sixth Characteristic");
+            console.log("Notifications started for Seventh Characteristic");
             //return characteristics[1].readValue();
         })
         /*.then(values => {
@@ -284,6 +301,12 @@ export default {
         else if (characteristic.uuid === this.characteristicsFound[5].uuid) {
             this.fifthValue = value;
             this.sign2 = parseInt(this.fifthValue, 10);
+        }
+        else if (characteristic.uuid === this.characteristicsFound[6].uuid) {
+            this.sixthValue = parseInt(value, 10);
+        }
+        else if (characteristic.uuid === this.characteristicsFound[7].uuid) {
+            this.seventhValue = parseInt(value, 10);
         }
         this.timestampContainers[0] = this.getDateTime();
     },
@@ -455,5 +478,13 @@ button {
   margin: 8px;
   border-radius: 5px;
 
+}
+.blue {
+    color: blue;
+    font-size: 30px;
+}
+.lightgray {
+    color: lightgray;
+    font-size: 30px;
 }
 </style>
