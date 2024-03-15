@@ -235,6 +235,7 @@ export default {
             fourthCharacteristic.startNotifications();
             fifthCharacteristic.startNotifications();
             sixthCharacteristic.startNotifications();
+            seventhCharacteristic.startNotifications();
 
             console.log("Notifications started for Sensor Characteristic");
             console.log("Notifications started for Second Characteristic");
@@ -342,7 +343,7 @@ export default {
             });
         } else {
             console.error ("Bluetooth is not connected. Cannot write to characteristic.")
-            window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
+            window.alert("Bluetooth is not connected. Cannot write to characteristic. \nConnect to BLE first!")
         }
     },
     disconnectDevice() {

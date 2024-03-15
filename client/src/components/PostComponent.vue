@@ -46,7 +46,7 @@
         v-bind:item="post"
         v-bind:index="index"
         v-bind:key="post._id">
-        <!--<button class ="delete-button" v-on:click="deletePost(post._id)"><i class="fas fa-trash"></i></button>-->
+        <button class ="delete-button" v-on:click="deletePost(post._id)"><i class="fas fa-trash"></i></button>
         <p class="date">
           {{
             post.start ? post.start.split('T')[0] : ''
@@ -75,11 +75,11 @@
           
           <div> 
             <div>
-              <p><span class="category">Start: </span> <span> {{ post.start.split('.0')[0] }} </span></p>
+              <p><span class="category">Start: </span> <span> {{ post.start.split('.')[0] }} </span></p>
             </div>
 
             <div>
-              <p><span class="category">End: </span> <span> {{ post.end.split('.0')[0] }} </span></p>
+              <p><span class="category">End: </span> <span> {{ post.end.split('.')[0] }} </span></p>
             </div>
 
             <div>
