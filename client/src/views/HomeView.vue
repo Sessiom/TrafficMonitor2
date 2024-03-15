@@ -1,7 +1,7 @@
 <template>
     <div class="content">
 
-        <div class="notification" v-if ="this.bleServer"> 
+        <div class="notification" v-if ="this.bleState == 'Connected'"> 
             <p><i class="fas fa-wifi fa-rotate-270"></i><i class="fas fa-wifi fa-rotate-90" style="position: relative; left: -10px;"></i>Live</p >
         </div>
 
@@ -39,7 +39,7 @@
                 <!-- <p class="reading"><span id="valueContainer2">{{ secondValue }}</span></p>-->
                 <img :src="imageSourceSecond" class="my-image"/>
                 <i class="fas fa-car-on" :class="carColor2"></i>
-                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[1] }}</span></p>
+                <p class="gray-label">Last reading: <span class="timestamp">{{ timestampContainers[0] }}</span></p>
             </div>
 
         </div>
