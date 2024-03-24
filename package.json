@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "nodemon server/index.js"
+    "start_dev": "nodemon server/index.js",
+    "server": "python server/objectDetection.py",
+    "dev": "concurrently \"npm run server\" \"npm run start\""
   },
+
   "author": "Josh",
   "license": "ISC",
   "dependencies": {
@@ -17,6 +20,7 @@
     "mongodb": "^6.3.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "nodemon": "^3.0.3"
   }
 }
