@@ -8,8 +8,10 @@ import urllib.request
 import numpy as np
 import requests
 from http.client import IncompleteRead
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Replace with the IP address of your ESP32 device
 esp32_ip = '192.168.1.185'  
@@ -100,7 +102,7 @@ def run_detection():
 
         car_detected = False
 
-@app.route('/')
+@app.route('/video_feed')
 def index():
     return Response(run_detection(), mimetype='multipart/x-mixed-replace; boundary=frame')
 

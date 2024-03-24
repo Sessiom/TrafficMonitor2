@@ -26,6 +26,19 @@
 
         <div class="card-grid">
             <div class="card">
+                <h2>Stream 1</h2>
+                <img class="stream" src="http://localhost:5001/video_feed"/>
+            </div>
+
+            <div class="card">
+                <h2>Stream 2</h2>
+                <img class="stream" src=""/>
+            </div>
+
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
                 <h2>Sign 1</h2>
                 <!-- <p class="reading"><span id="valueContainer1">{{ retrievedValue }}</span></p> -->
                 <img :src="imageSourceRetrieved" class="my-image"/>
@@ -487,5 +500,10 @@ button {
 .lightgray {
     color: lightgray;
     font-size: 30px;
+}
+.stream {
+    width: 90%;
+    height: 300px;
+    margin-bottom: 10px;
 }
 </style>
