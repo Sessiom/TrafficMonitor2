@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node server/index.js",
     "start_dev": "nodemon server/index.js",
-    "server": "python server/objectDetection.py",
-    "dev": "concurrently \"npm run server\" \"npm run start\""
+    "server1": "python server/flaskServer1.py",
+    "server2": "python server/flaskServer2.py",
+    "dev": "concurrently \"npm run start\" \"npm run server1\" \"npm run server2\" "
   },
 
   "author": "Josh",

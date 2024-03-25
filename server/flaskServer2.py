@@ -8,19 +8,22 @@ import urllib.request
 import numpy as np
 import requests
 from http.client import IncompleteRead
-from flask_cors import CORS
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
 # Replace with the IP address of your ESP32 device
-esp32_ip = '192.168.1.185'  
+esp32_ip = os.getenv('CAMERA2_URL')  
 
 # URL for the WebServer
 url = f"http://{esp32_ip}:81/"
 
 # URL for the AsyncWebServer
 stream_url = f"http://{esp32_ip}:80/cam-hi.jpg"
+
 
 # Create a VideoCapture object
 cap = cv2.VideoCapture(stream_url)
@@ -102,11 +105,11 @@ def run_detection():
 
         car_detected = False
 
-@app.route('/video_feed')
+@app.route('/')
 def index():
     return Response(run_detection(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     t = threading.Thread(target=run_detection)
     t.start()
-    app.run(host='0.0.0.0', port=5001)  
+    app.run(host='0.0.0.0', port=5002)  # Run the server on port 6000
