@@ -32,7 +32,7 @@
 
             <div class="card">
                 <h2>Stream 2</h2>
-                <img class="stream" src=""/>
+                <img class="stream" src="http://localhost:5002/video_feed"/>
             </div>
 
         </div>

@@ -105,7 +105,7 @@ def run_detection():
 
         car_detected = False
 
-@app.route('/')
+@app.route('/video_feed')
 def index():
     return Response(run_detection(), mimetype='multipart/x-mixed-replace; boundary=frame')
 

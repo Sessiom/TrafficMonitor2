@@ -10,7 +10,6 @@
     "server2": "python server/flaskServer2.py",
     "dev": "concurrently \"npm run start\" \"npm run server1\" \"npm run server2\" "
   },
-
   "author": "Josh",
   "license": "ISC",
   "dependencies": {
