@@ -27,14 +27,15 @@
         <div class="card-grid">
             <div class="card">
                 <h2>Stream 1</h2>
-                <img class="stream" src="http://localhost:5001/video_feed"/>
-            </div>
+                <img class="stream" :src="stream1Url" v-if="stream1Playing" />
+                <button class="streamButton" @click="toggleStream1">{{ stream1Playing ? 'Stop Stream' : 'Start Stream' }}</button>
+                </div>
 
-            <div class="card">
+                <div class="card">
                 <h2>Stream 2</h2>
-                <img class="stream" src="http://localhost:5002/video_feed"/>
+                <img class="stream" :src="stream2Url" v-if="stream2Playing" />
+                <button class="streamButton" @click="toggleStream2">{{ stream2Playing ? 'Stop Stream' : 'Start Stream' }}</button>
             </div>
-
         </div>
 
         <div class="card-grid">
@@ -90,6 +91,11 @@ const toast = useToast();
 export default {
   data() {
     return {
+      stream1Url: 'http://localhost:5004/video_feed',
+      stream2Url: 'http://localhost:5002/video_feed',
+      stream1Playing: false,
+      stream2Playing: false,
+
       deviceName: 'ESP32',
       bleService: '6c744422-08a1-40c7-807a-576b64b52437',
       characteristics: [ 
@@ -174,6 +180,22 @@ export default {
     }
   },
   methods: {
+    toggleStream1() {
+        if (this.stream1Playing) {
+            this.stream1Url = null; // This will stop loading the image
+        } else {
+            this.stream1Url = 'http://localhost:5004/video_feed'; // Replace with your actual stream URL
+        }
+        this.stream1Playing = !this.stream1Playing;
+    },
+    toggleStream2() {
+        if (this.stream2Playing) {
+            this.stream2Url = null; // This will stop loading the image
+        } else {
+            this.stream2Url = 'http://localhost:5002/video_feed'; // Replace with your actual stream URL
+        }
+        this.stream2Playing = !this.stream2Playing;
+    },
     connectButton() {
       if (this.isWebBluetoothEnabled()) {
         this.connectToDevice();
@@ -505,5 +527,21 @@ button {
     width: 90%;
     height: 300px;
     margin-bottom: 10px;
+}
+.streamButton {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px; /* Reduced padding */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px; /* Reduced font size */
+    margin: 4px 2px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+}
+.streamButton:hover {
+    background-color: #45a049;
 }
 </style>
