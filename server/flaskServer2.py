@@ -8,16 +8,16 @@ import urllib.request
 import numpy as np
 import requests
 from http.client import IncompleteRead
-from dotenv import load_dotenv
-import os
+#from dotenv import load_dotenv
+#import os
 
-load_dotenv()
+#load_dotenv()
 
 app = Flask(__name__)
 
 # Replace with the IP address of your ESP32 device
-esp32_ip = os.getenv('CAMERA2_URL')  
-
+#esp32_ip = os.getenv('CAMERA2_URL')  
+esp32_ip = '192.168.8.227'
 # URL for the WebServer
 url = f"http://{esp32_ip}:81/"
 
@@ -45,7 +45,7 @@ classNames = ["person", "bicycle", "car", "motorcycle", "airplane", "bus", "trai
               "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink",
               "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush",
              ]
-
+mask = cv2.imread("server/images/espCam1Mask.png")
 prev_message_str = None
 
 car_detected = False
@@ -61,8 +61,10 @@ def run_detection():
             imgnp = np.array(bytearray(e.partial), dtype=np.uint8)
 
         img = cv2.imdecode(imgnp,-1)
+        cv2.line(img, (400, 0), (400, 600), (0, 255, 0), 2)
+        imgRegion = cv2.bitwise_and(img, mask)
 
-        results = model(img, stream=True)
+        results = model(imgRegion, stream=True)
         for r in results:
             boxes = r.boxes
             for box in boxes:
@@ -84,19 +86,19 @@ def run_detection():
                 if currentClass == "car" and conf > 0.3:
                     cvzone.putTextRect(img, f'{currentClass} {conf}', (max(0, x1), max(35, y1)), 3, 3, (255,255,255), (0,255,0))
                     cvzone.cornerRect(img, (x1,y1,w,h), 30, 5, 1, (0, 255, 0), (0, 255, 0))
-                    message_str = "True"
+                    message_str = "T"
                     car_detected = True
 
-                # Convert the image to JPEG
-                ret, jpeg = cv2.imencode('.jpg', img)
-                frame = jpeg.tobytes()
+        # Convert the image to JPEG
+        ret, jpeg = cv2.imencode('.jpg', img)
+        frame = jpeg.tobytes()
 
-                # Yield the frame to the client
-                yield (b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        # Yield the frame to the client
+        yield (b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
         if not car_detected:
-            message_str = "False"
+            message_str = "F"
 
         if message_str != prev_message_str:
             data = {"value": message_str}

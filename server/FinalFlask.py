@@ -105,13 +105,13 @@ def run_detection1():
                     message_str = "T"
                     car_detected = True
 
-                # Convert the image to JPEG
-                ret, jpeg = cv2.imencode('.jpg', img)
-                frame = jpeg.tobytes()
+        # Convert the image to JPEG
+        ret, jpeg = cv2.imencode('.jpg', img)
+        frame = jpeg.tobytes()
 
-                # Yield the frame to the client
-                yield (b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        # Yield the frame to the client
+        yield (b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
         if not car_detected:
             message_str = "F"
@@ -162,13 +162,13 @@ def run_detection2():
                     message_str = "T"
                     car_detected = True
 
-                # Convert the image to JPEG
-                ret, jpeg = cv2.imencode('.jpg', img)
-                frame = jpeg.tobytes()
+        # Convert the image to JPEG
+        ret, jpeg = cv2.imencode('.jpg', img)
+        frame = jpeg.tobytes()
 
-                # Yield the frame to the client
-                yield (b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        # Yield the frame to the client
+        yield (b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
         if not car_detected:
             message_str = "F"
