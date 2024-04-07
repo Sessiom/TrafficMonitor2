@@ -98,13 +98,13 @@ export default {
 
       deviceName: 'ESP32',
       bleService: '6c744422-08a1-40c7-807a-576b64b52437',
-      characteristics: [ 
-      '2bd7866c-14ca-4191-a09f-c4985352cc96',      // LED characteristic
-      'de420cdd-4085-4066-8ee7-a6c5e28316d5',      // Sensor characteristic
-      'dc51766b-fe18-4d8f-bb31-d49e82e59e18',      // second characteristic
-      'c28e246d-5632-44d7-8fdb-124f4243eb10',      // third characteristic
-      '65037f44-f9f5-48a4-8205-e9d3dc574316',      // fourth characteristic
-      '55a12381-bb3c-4731-9cde-99fcbc13fca2',      // fifth characteristic
+      characteristics: [       
+      'de420cdd-4085-4066-8ee7-a6c5e28316d5',      // Red characteristic
+      '2bd7866c-14ca-4191-a09f-c4985352cc96',      // Sign1 characteristic
+      'dc51766b-fe18-4d8f-bb31-d49e82e59e18',      // Sign2 characteristic
+      'c28e246d-5632-44d7-8fdb-124f4243eb10',      // CarsInLane characteristic
+      '65037f44-f9f5-48a4-8205-e9d3dc574316',      // Sign1count characteristic
+      '55a12381-bb3c-4731-9cde-99fcbc13fca2',      // Sign2count characteristic
       'd9001af2-630c-4a44-ad33-2520d5fc93ff',      // carWaitingLeft characteristic
       '0d044a6c-fdf5-485f-b0f0-55c8d9f3854a'       // carWaitingRight characteristic
       ],
