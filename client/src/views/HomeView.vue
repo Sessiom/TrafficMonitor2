@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="card-grid">
+        <!-- <div class="card-grid">
             <div class="card">
                 <h2>Stream 1</h2>
                 <img class="stream" :src="stream1Url" v-if="stream1Playing" />
@@ -36,7 +36,7 @@
                 <img class="stream" :src="stream2Url" v-if="stream2Playing" />
                 <button class="streamButton" @click="toggleStream2">{{ stream2Playing ? 'Stop Stream' : 'Start Stream' }}</button>
             </div>
-        </div>
+        </div> -->
 
         <div class="card-grid">
             <div class="card">

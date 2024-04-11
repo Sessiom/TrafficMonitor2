@@ -9,7 +9,7 @@
     "server1": "python server/flaskServer1.py",
     "server2": "python server/flaskServer2.py",
     "flask": "python server/FinalFlask.py",
-    "dev": "concurrently \"npm run start\" \"npm run server1\" \"npm run server2\" "
+    "dev": "nodemon server/index.js"
   },
   "author": "Josh",
   "license": "ISC",
