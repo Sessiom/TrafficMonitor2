@@ -5,6 +5,13 @@ In addition to a website, this repository has the esp32 code, espCam code for ea
 The webpage displays data from an esp32 using ble (bluetooth low energy). 
 It builds off of [sessiom.github.io/trafficMonitor](sessiom.github.io/trafficMonitor).
 The data from each session is then saved to mongoDB. 
+# Refferences
+ESP-NOW (https://randomnerdtutorials.com/esp-now-esp32-arduino-ide/)
+Ble (https://randomnerdtutorials.com/esp32-web-bluetooth/)
+Object Detection (https://www.youtube.com/watch?v=WgPbbWmnXJ8&t=8265s)
+Vue Full Stack (https://www.youtube.com/watch?v=j55fHUJqtyw&t=22s), (https://www.youtube.com/watch?v=X-JZ-QPApUs)
+
+
 # Below is the live stream from the espCam after object detection is done and a bounding box is added.
 ![Car Detection](https://github.com/Sessiom/Smart-Portable-Traffic-Signal-System-For-Single-Lane-Roadside-Construction/blob/master/readMeImages/carDetection.PNG)
 # Next is the Live Home View.
