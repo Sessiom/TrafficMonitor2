@@ -8,8 +8,8 @@ The data from each session is then saved to mongoDB.
 ## References
 -  ESP-NOW: https://randomnerdtutorials.com/esp-now-esp32-arduino-ide/
 -  Ble: https://randomnerdtutorials.com/esp32-web-bluetooth/
--  Object Detection: https://www.youtube.com/watch?v=WgPbbWmnXJ8&t=8265s
--  Vue Full Stack: https://www.youtube.com/watch?v=j55fHUJqtyw&t=22s, https://www.youtube.com/watch?v=X-JZ-QPApUs
+-  Object Detection: https://www.youtube.com/watch?v=WgPbbWmnXJ8& 
+-  Vue Full Stack: https://www.youtube.com/watch?v=j55fHUJqtyw&, https://www.youtube.com/watch?v=X-JZ-QPApUs
 
 
 # Below is the live stream from the espCam after object detection is done and a bounding box is added.
