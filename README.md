@@ -12,9 +12,9 @@ The data from each session is then saved to mongoDB.
 -  Vue Full Stack: https://www.youtube.com/watch?v=j55fHUJqtyw&, https://www.youtube.com/watch?v=X-JZ-QPApUs
 
 
-# Below is the live stream from the espCam after object detection is done and a bounding box is added.
+# Object Detection
 ![Car Detection](https://github.com/Sessiom/Smart-Portable-Traffic-Signal-System-For-Single-Lane-Roadside-Construction/blob/master/readMeImages/carDetection.PNG)
-# Next is the Live Home View.
+# Home View
 ![Home View](https://github.com/Sessiom/Smart-Portable-Traffic-Signal-System-For-Single-Lane-Roadside-Construction/blob/master/readMeImages/trafficMonitor.PNG)
-# Next is the History View
+# History View
 ![History View](https://github.com/Sessiom/Smart-Portable-Traffic-Signal-System-For-Single-Lane-Roadside-Construction/blob/master/readMeImages/historyTab.PNG)
