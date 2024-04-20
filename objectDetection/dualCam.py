@@ -52,7 +52,7 @@ classNames = ["person", "bicycle", "car", "motorcycle", "airplane", "bus", "trai
 prev_message_str = None
 
 car_detected = False
-mask = cv2.imread("images/espCam1Mask.png")
+mask = cv2.imread("images/espCamMask.png")
 
 def send_post_request(url, data):
     try:
