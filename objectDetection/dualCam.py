@@ -7,7 +7,6 @@ import urllib.request
 import numpy as np
 import requests
 from http.client import IncompleteRead
-from multiprocessing import Process
 from threading import Thread
 
 
