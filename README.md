@@ -11,7 +11,8 @@ The data from each session is then saved to mongoDB.
 -  Object Detection: https://www.youtube.com/watch?v=WgPbbWmnXJ8& 
 -  Vue Full Stack: https://www.youtube.com/watch?v=j55fHUJqtyw&, https://www.youtube.com/watch?v=X-JZ-QPApUs
 
-
+# Traffic Scenario
+![topDown](https://github.com/Sessiom/Smart-Portable-Traffic-Signal-System-For-Single-Lane-Roadside-Construction/blob/master/readMeImages/topDown.PNG)
 # Object Detection
 ![Car Detection](https://github.com/Sessiom/Smart-Portable-Traffic-Signal-System-For-Single-Lane-Roadside-Construction/blob/master/readMeImages/carDetection.PNG)
 # Home View
