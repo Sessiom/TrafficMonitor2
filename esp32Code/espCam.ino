@@ -4,12 +4,12 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
 
-#define RXD2 3   //vor
+//#define RXD2 3   //vor
 #define TXD2 1   //vot
 
 //Replace with credentials
-const char* WIFI_SSID = "######";
-const char* WIFI_PASS = "######";
+const char* WIFI_SSID = "****";
+const char* WIFI_PASS = "****";
 
 WebServer server(80);
 AsyncWebServer asyncserver(81);
@@ -17,7 +17,7 @@ AsyncWebServer asyncserver(81);
  
 static auto loRes = esp32cam::Resolution::find(320, 240);
 static auto midRes = esp32cam::Resolution::find(350, 530);
-static auto hiRes = esp32cam::Resolution::find(800, 600);
+static auto hiRes = esp32cam::Resolution::find(1200, 900);
 void serveJpg()
 {
   auto frame = esp32cam::capture();
@@ -64,6 +64,9 @@ void  setup(){
   Serial.begin(115200);
   Serial.println();
 
+  pinMode(TXD2, OUTPUT);
+  digitalWrite(TXD2, HIGH);
+
   {
     using namespace esp32cam;
     Config cfg;
@@ -97,8 +100,12 @@ void  setup(){
     String message;
     if (request->hasParam("value", true)) {
       message = request->getParam("value", true)->value();
-      Serial.println(message);
-
+      if(message == "T"){
+        digitalWrite(TXD2, LOW);
+      }
+      else if (message == "F"){
+        digitalWrite(TXD2, HIGH);
+      }
     } else {
       message = "No message sent";
     }

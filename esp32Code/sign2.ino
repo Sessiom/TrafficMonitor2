@@ -3,17 +3,17 @@
   
 */
 
-//for esp 1
+//for esp 2
 
 #include <esp_now.h>
 #include <WiFi.h>
 #include <ESP32Servo.h>
 
 #define onBoard 2
-#define echoPin2 22
-#define trigPin2 23
+#define echoPin2 19
+#define trigPin2 21
 #define RXp2 16
-#define TXp2 17
+//#define TXp2 17
 
 // REPLACE WITH THE MAC Address of your receiver 
 uint8_t broadcastAddress1[] = {0xA0, 0xA3, 0xB3, 0xED, 0xA5, 0x60}; // esp1
@@ -135,7 +135,8 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 void setup() {
   // Init Serial Monitor
   Serial.begin(115200);
-  Serial2.begin(115200, SERIAL_8N1, RXp2, TXp2);
+  //Serial2.begin(115200, SERIAL_8N1, RXp2, TXp2);
+  pinMode(RXp2, INPUT_PULLUP);
 
   pinMode(onBoard, OUTPUT);
   pinMode(trigPin2, OUTPUT);
@@ -310,34 +311,26 @@ void loop() {
 
 /* When yellow "car is approaching" */  
 void carDetection1(){
-        String incomingMessage = Serial2.readStringUntil('\n');
-        incomingMessage.trim();
-        Serial.print("Message Received: ");
-        Serial.println(incomingMessage);
-        if (incomingMessage == "T") {
-            isCarWaiting = true;
+         int buttonState = digitalRead(RXp2);
+        if (buttonState == LOW) {
+            isCarApproaching = true;
             digitalWrite(onBoard, HIGH);
-        } else if(incomingMessage == "F"){
-            isCarWaiting = false;
+        } else if(buttonState == HIGH){
+            isCarApproaching = false;
             digitalWrite(onBoard, LOW);
         }
 }
 
 /* When red say "car is waiting"*/
 void carDetection2(){
-    String incomingMessage = Serial2.readString();
-    incomingMessage.trim();
-    Serial.print("Message Received: ");
-    Serial.println(incomingMessage);
-    if(incomingMessage == "True")
-    {
-      isCarWaiting = true;
-      digitalWrite(onBoard, HIGH);
-    }
-    else if(incomingMessage == "F"){
-      isCarWaiting = false;
-      digitalWrite(onBoard, LOW);
-    }
+    int buttonState = digitalRead(RXp2);
+        if (buttonState == LOW) {
+            isCarWaiting = true;
+            digitalWrite(onBoard, HIGH);
+        } else if(buttonState == HIGH){
+            isCarWaiting = false;
+            digitalWrite(onBoard, LOW);
+        }
 }
 
 /*When yellow "car entered lane"*/
@@ -351,7 +344,7 @@ void UltrasonicRead3(){
     duration = pulseIn(echoPin2, HIGH);
     distance = (duration/2) / 29.1;
     //Serial.println(distance);
-    if ((distance < 20) && (distance > 0)) { 
+    if ((distance < 10) && (distance > 0)) { 
       digitalWrite(onBoard, HIGH);
       currentCarCheck3 = true;                   
       if (currentCarCheck3 && !prevCarCheck3) {
@@ -379,11 +372,13 @@ void UltrasonicRead4(){
     duration = pulseIn(echoPin2, HIGH);
     distance = (duration/2) / 29.1;
     //Serial.println(distance);
-    if ((distance < 20) && (distance > 0)) { 
+    if ((distance < 10) && (distance > 0)) { 
       digitalWrite(onBoard, HIGH);
       currentCarCheck4 = true; 
-      //Serial.print("Cars entering Lane: ");
-      //Serial.println(incomingCarsEntering);                  
+      Serial.print("Cars entering Lane: ");
+      Serial.println(incomingCarsEntering);
+      Serial.print("Cars Leaving Lane");
+      Serial.println(carsLeaving);                  
       if (currentCarCheck4 && !prevCarCheck4 && (incomingCarsEntering > carsLeaving)) {
         carsLeaving++;
         Serial.print("Cars Leaving: ");
@@ -399,13 +394,13 @@ void UltrasonicRead4(){
 
 void moveServoStop() {
     myServo.write(0);
-    delay(500);
+    delay(600);
     myServo.detach();
 }
 
 void moveServoSlow() {
     myServo.write(180);
-    delay(500);
+    delay(600);
     myServo.detach();
 }
 
