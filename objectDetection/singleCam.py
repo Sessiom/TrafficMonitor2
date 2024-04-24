@@ -8,15 +8,14 @@ import requests
 from http.client import IncompleteRead
 
 # Replace with the IP address of your ESP32 device
-esp32_ip = '172.20.10.2'  
+esp32_ip = '192.168.8.230'  
 
 # URL for the WebServer
 url = f"http://{esp32_ip}:81/"
 
 # URL for the AsyncWebServer
-stream_url = f"http://{esp32_ip}:80/cam-lo.jpg"
+stream_url = f"http://{esp32_ip}:80/cam-hi.jpg"
 
-cv2.namedWindow("live Cam Testing", cv2.WINDOW_AUTOSIZE)
 
 # Create a VideoCapture object
 cap = cv2.VideoCapture(stream_url)
@@ -26,7 +25,8 @@ if not cap.isOpened():
     print("Failed to open the IP camera stream")
     exit()
 
-model = YOLO("yolov8l.pt")
+model = YOLO("yolov8m.pt")
+mask = cv2.imread("images/espCam1Mask.png")
 
 classNames = ["person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", 
               "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
@@ -46,14 +46,18 @@ car_detected = False
 while True:
     img_resp = urllib.request.urlopen(stream_url)
 
-    try:
-        imgnp = np.array(bytearray(img_resp.read()), dtype=np.uint8)
-    except IncompleteRead as e:
-        imgnp = np.array(bytearray(e.partial), dtype=np.uint8)
+    imgnp = np.array(bytearray(img_resp.read()), dtype=np.uint8)
+    # try:
+    #     imgnp = np.array(bytearray(img_resp.read()), dtype=np.uint8)
+    # except IncompleteRead as e:
+    #     imgnp = np.array(bytearray(e.partial), dtype=np.uint8)
 
+    
     img = cv2.imdecode(imgnp,-1)
+    cv2.line(img, (400, 0), (400, 600), (0, 255, 0), 2)
+    imgRegion = cv2.bitwise_and(img, mask)
 
-    results = model(img, stream=True)
+    results = model(imgRegion, stream=True)
     for r in results:
         boxes = r.boxes
         for box in boxes:
@@ -75,19 +79,25 @@ while True:
             currentClass = classNames[cls]
 
             # Draw only vehicles
-            if currentClass == "car" and conf > 0.3:
+            if (currentClass == "car" or currentClass == 'truck' or currentClass == 'motorcycle' or currentClass == 'bus') and conf > 0.3:
                 cvzone.putTextRect(img, f'{currentClass} {conf}', (max(0, x1), max(35, y1)), 3, 3, (255,255,255), (0,255,0))
                 cvzone.cornerRect(img, (x1,y1,w,h), 30, 5, 1, (0, 255, 0), (0, 255, 0))
-                message_str = "True"
+                message_str = "T"
+                print(message_str)
                 car_detected = True
                 #break 
 
     if not car_detected:
-        message_str = "False"
+        message_str = "F"
+        print(message_str)
 
     if message_str != prev_message_str:
         data = {"value": message_str}
         response = requests.post(url, data=data)
+        if response.status_code == 200:
+            print("Message sent successfully.")
+        else:
+            print(f"Failed to send message. Status code: {response.status_code}")
         prev_message_str = message_str
 
     car_detected = False

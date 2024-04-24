@@ -3,17 +3,17 @@
   
 */
 
-//for esp 2
+//for esp 1
 
 #include <esp_now.h>
 #include <WiFi.h>
-#include <ESP32Servo.h>
+#include <ESP32Servo.h>  //5 successful spins (No Brown out)
 
 #define onBoard 2
 #define echoPin2 19
-#define trigPin2 21
-#define RXp2 16
-//#define TXp2 17
+#define trigPin2 21    //IP of camera (192.168.8.230)
+#define RXp2 16     // (black Tape on Black sign) (Blue on Blue sign)
+#define TXp2 17
 
 // REPLACE WITH THE MAC Address of your receiver 
 uint8_t broadcastAddress1[] = {0xD4, 0x8A, 0xFC, 0x9E, 0x1C, 0xB0}; // esp2
@@ -45,8 +45,8 @@ unsigned long timer = 0; // for when the lane is congested
 unsigned long timerYellow = 0; // for when the light just turned yellow
 unsigned long timerRed = 0;  // for when the light just turned red
 unsigned long timerBeforeYellow = 0; // for before the light can turn yellow
-const long interval1 = 250; // .25 sec for car count
-const long interval2 = 250; // .25 sec for car subtract
+const long interval1 = 125; // 1/8 per sec for car count
+const long interval2 = 125; // 1/8 per sec for car incoming
 const long interval3 = 50; // .05 sec for sending radio (50 for fastest) (1000 for testing)
 
 const long interval4 = 3000; // timer for when there is constant traffic flow on both sides
@@ -58,7 +58,7 @@ const long interval7 = 3000; // timer for before the light can turn yellow incas
 int carsEntering;
 int carsLeaving;
 int signCount;
-bool isSlow = false;
+bool isSlow = false;   // Change to false for testing (should be true by default)
 bool isCarWaiting = false;
 bool isCarApproaching = false;
 bool isGoToRed = false;
@@ -121,7 +121,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
   //Serial.print("Bytes received: ");
   //Serial.println(len);
-   if(len >= 2){
+  if(len >= 2){
    incomingCarsEntering = incomingReadings.carsentering;
    incomingCarsLeaving = incomingReadings.carsleaving;
    incomingIsSlow = incomingReadings.slw;
@@ -138,8 +138,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 void setup() {
   // Init Serial Monitor
   Serial.begin(115200);
-  //Serial2.begin(115200, SERIAL_8N1, RXp2, TXp2);
-  pinMode(RXp2, INPUT_PULLUP);
+  Serial2.begin(115200, SERIAL_8N1, RXp2, TXp2);
 
   pinMode(onBoard, OUTPUT);
   pinMode(trigPin2, OUTPUT);
@@ -163,7 +162,7 @@ void setup() {
   // Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Trasnmitted packet
   esp_now_register_send_cb(OnDataSent);
-  
+
   // register peer
   peerInfo.channel = 0;  
   peerInfo.encrypt = false;
@@ -180,12 +179,11 @@ void setup() {
     Serial.println("Failed to add peer");
     return;
   }
-       
+
   // Register for a callback function that will be called when data is received
   esp_now_register_recv_cb(OnDataRecv);
-
 }
- 
+
 void loop() {
   unsigned long currentMillis = millis();
 
@@ -193,7 +191,7 @@ void loop() {
 
     carsInLane = 0;
     // Set values to send
-    trafficSignReadings.id = 2;
+    trafficSignReadings.id = 1;
     trafficSignReadings.slw = isSlow;
     trafficSignReadings.carsentering = carsEntering;
     trafficSignReadings.carsleaving = carsLeaving;
@@ -221,13 +219,13 @@ void loop() {
   }
 
   if(!incomingIsRedRed){
-    // If the sign is yellow/slow
+    // If the sign is yellow/slow 
     if(isSlow){
 
       //Outside sensor
       if (currentMillis - prevMillis1 >= interval1) {
-        prevMillis1 = currentMillis;   
-        carDetection1();  
+        prevMillis1 = currentMillis;
+        carDetection1();     
       }
       //Inside sensor
       if (currentMillis - prevMillis2 >= interval2) {
@@ -236,7 +234,7 @@ void loop() {
       }
       carsInLane = carsEntering - incomingCarsLeaving;
     }
-    
+
     // If the sign is red/stop and the light did not just turn red
     else if ((currentMillis - timerRed >= interval6) && !isSlow && (!prevIsSlow || incomingIsSlow) ) { // added && (!prevIsSlow || incomingIsSlow)
 
@@ -251,7 +249,7 @@ void loop() {
         prevMillis2 = currentMillis;
       }
       carsInLane = incomingCarsEntering - carsLeaving;
-        if(prevIsSlow && (!incomingIsSlow) ){
+        if(prevIsSlow && (!incomingIsSlow)){
           carsInLane =  carsEntering - incomingCarsLeaving;
         }
       isTimerRedGoing = false;
@@ -269,7 +267,7 @@ void loop() {
     }
 
     // Set values to send
-    trafficSignReadings.id = 2;
+    trafficSignReadings.id = 1;
     trafficSignReadings.slw = isSlow;
     trafficSignReadings.carsentering = carsEntering;
     trafficSignReadings.carsleaving = carsLeaving;
@@ -277,7 +275,7 @@ void loop() {
     trafficSignReadings.iscarwaiting = isCarWaiting;
     trafficSignReadings.isgotored = isGoToRed;
     trafficSignReadings.carsinlane = carsInLane;
-    
+
     // Send message via ESP-NOW
     if (currentMillis - prevMillis3 >= interval3){
 
@@ -290,7 +288,7 @@ void loop() {
           //Serial.println("Error sending the data");
         }
     }
-    
+
     updateSign();
     delay(100);
     prevRedRed = false;
@@ -317,29 +315,37 @@ void loop() {
 
 /* When yellow "car is approaching" */  
 void carDetection1(){
-        int buttonState = digitalRead(RXp2);
-        if (buttonState == LOW) {
-            isCarApproaching = true;
+        String incomingMessage = Serial2.readStringUntil('\n');
+        incomingMessage.trim();
+        Serial.print("Message Received: ");
+        Serial.println(incomingMessage);
+        if (incomingMessage == "T") {
+            isCarWaiting = true;
             digitalWrite(onBoard, HIGH);
-        } else if(buttonState == HIGH){
-            isCarApproaching = false;
+        } else if(incomingMessage == "F"){
+            isCarWaiting = false;
             digitalWrite(onBoard, LOW);
         }
 }
 
 /* When red say "car is waiting"*/
 void carDetection2(){
-    int buttonState = digitalRead(RXp2);
-        if (buttonState == LOW) {
-            isCarWaiting = true;
-            digitalWrite(onBoard, HIGH);
-        } else if(buttonState == HIGH){
-            isCarWaiting = false;
-            digitalWrite(onBoard, LOW);
-        }
+    String incomingMessage = Serial2.readStringUntil('\n');
+    incomingMessage.trim();
+    Serial.print("Message Received: ");
+    Serial.println(incomingMessage);
+    if(incomingMessage == "T")
+    {
+      isCarWaiting = true;
+      digitalWrite(onBoard, HIGH);
+    }
+    else if(incomingMessage == "F"){
+      isCarWaiting = false;
+      digitalWrite(onBoard, LOW);
+    }
 }
 
-/*When yellow "car entered lane"*/
+/* When yellow "car entered lane"*/
 void UltrasonicRead3(){
     long duration, distance;
     digitalWrite(trigPin2, LOW);  
@@ -350,18 +356,18 @@ void UltrasonicRead3(){
     duration = pulseIn(echoPin2, HIGH);
     distance = (duration/2) / 29.1;
     //Serial.println(distance);
-    if ((distance < 10) && (distance > 0)) { 
-      digitalWrite(onBoard, HIGH);
+    if ((distance < 20) && (distance > 0)) { 
+      //digitalWrite(onBoard, HIGH);
       currentCarCheck3 = true;                   
       if (currentCarCheck3 && !prevCarCheck3) {
-        signCount++;
         carsEntering++;
+        signCount++;
         Serial.print("Cars Entering Lane: ");
         Serial.println(carsEntering);
       }
     } 
     else {
-      digitalWrite(onBoard, LOW);
+      //digitalWrite(onBoard, LOW);
       currentCarCheck3 = false;
     }
     prevCarCheck3 = currentCarCheck3;
@@ -378,13 +384,11 @@ void UltrasonicRead4(){
     duration = pulseIn(echoPin2, HIGH);
     distance = (duration/2) / 29.1;
     //Serial.println(distance);
-    if ((distance < 10) && (distance > 0)) { 
-      digitalWrite(onBoard, HIGH);
+    if ((distance < 20) && (distance > 0)) { 
+      //digitalWrite(onBoard, HIGH);
       currentCarCheck4 = true; 
-      Serial.print("Cars entering Lane: ");
-      Serial.println(incomingCarsEntering);
-      Serial.print("Cars Leaving Lane");
-      Serial.println(carsLeaving);                  
+      //Serial.print("Cars entering Lane: ");
+      //Serial.println(incomingCarsEntering);                  
       if (currentCarCheck4 && !prevCarCheck4 && (incomingCarsEntering > carsLeaving)) {
         carsLeaving++;
         Serial.print("Cars Leaving: ");
@@ -392,7 +396,7 @@ void UltrasonicRead4(){
       }
     } 
     else {
-      digitalWrite(onBoard, LOW);
+      //digitalWrite(onBoard, LOW);
       currentCarCheck4 = false;
     }
     prevCarCheck4 = currentCarCheck4;
@@ -450,7 +454,7 @@ unsigned long currentMillis = millis();
   // Need the !prevIsSlow because This state can only happen during prev red and current red
   if((currentMillis - timerBeforeYellow >= interval7) && isCarWaiting && !incomingIsSlow && !prevIsSlow && (carsInLane == 0) && !isSlow){
     moveServoSlow();
-    carsEntering = 0;
+    carsEntering = 0; 
     isGoToRed = false;
     isSlow = true;
     timerYellow = millis();
@@ -460,13 +464,13 @@ unsigned long currentMillis = millis();
   }
 
   //In order for the light to go to red, 5 seconds must have passed from when the light first turned yellow
-  if((currentMillis - timerYellow >= interval5) && incomingIsGoToRed && isSlow){
+  if((currentMillis - timerYellow >= interval5) && incomingIsGoToRed && isSlow ){
     moveServoStop();
     //Start timer for turning red, This is because we will continue to red cars entering the lane
     //In case cars run the red light.
     timerRed = millis();
     isTimerRedGoing = true;
-    
+
     prevIsSlow = isSlow;
     isSlow = false;
     carsLeaving = 0;
