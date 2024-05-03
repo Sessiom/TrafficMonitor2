@@ -49,10 +49,10 @@ const long interval1 = 125; // 1/8 per sec for car count
 const long interval2 = 125; // 1/8 per sec for car incoming
 const long interval3 = 50; // .05 sec for sending radio (50 for fastest) (1000 for testing)
 
-const long interval4 = 3000; // timer for when there is constant traffic flow on both sides
-const long interval5 = 5000; // timer for when the light just turned yellow
-const long interval6 = 3000; // timer for when the light just turned red
-const long interval7 = 3000; // timer for before the light can turn yellow incase a car runs the opposite red
+const long interval4 = 1000; // timer for when there is constant traffic flow on both sides
+const long interval5 = 2000; // timer for when the light just turned yellow
+const long interval6 = 1000; // timer for when the light just turned red
+const long interval7 = 1000; // timer for before the light can turn yellow incase a car runs the opposite red
 
 // Define variables to be sent
 int carsEntering;
@@ -358,7 +358,7 @@ void UltrasonicRead3(){
     duration = pulseIn(echoPin2, HIGH);
     distance = (duration/2) / 29.1;
     //Serial.println(distance);
-    if ((distance < 20) && (distance > 0)) { 
+    if ((distance < 13) && (distance > 0)) { 
       //digitalWrite(onBoard, HIGH);
       currentCarCheck3 = true;                   
       if (currentCarCheck3 && !prevCarCheck3) {
@@ -386,9 +386,10 @@ void UltrasonicRead4(){
     duration = pulseIn(echoPin2, HIGH);
     distance = (duration/2) / 29.1;
     //Serial.println(distance);
-    if ((distance < 20) && (distance > 0)) { 
+    if ((distance < 13) && (distance > 0)) { 
       //digitalWrite(onBoard, HIGH);
       currentCarCheck4 = true; 
+      Serial.println("test");
       //Serial.print("Cars entering Lane: ");
       //Serial.println(incomingCarsEntering);                  
       if (currentCarCheck4 && !prevCarCheck4 && (incomingCarsEntering > carsLeaving)) {
