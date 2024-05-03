@@ -4,20 +4,20 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
 
-//#define RXD2 3   //vor
+#define RXD2 3   //vor
 #define TXD2 1   //vot
 
 //Replace with credentials
-const char* WIFI_SSID = "****";
-const char* WIFI_PASS = "****";
+const char* WIFI_SSID = "######";
+const char* WIFI_PASS = "######";
 
 WebServer server(80);
 AsyncWebServer asyncserver(81);
- 
- 
+
+
 static auto loRes = esp32cam::Resolution::find(320, 240);
 static auto midRes = esp32cam::Resolution::find(350, 530);
-static auto hiRes = esp32cam::Resolution::find(1200, 900);
+static auto hiRes = esp32cam::Resolution::find(800, 600);
 void serveJpg()
 {
   auto frame = esp32cam::capture();
@@ -28,13 +28,13 @@ void serveJpg()
   }
   //Serial.printf("CAPTURE OK %dx%d %db\n", frame->getWidth(), frame->getHeight(),
        //         static_cast<int>(frame->size()));
- 
+
   server.setContentLength(frame->size());
   server.send(200, "image/jpeg");
   WiFiClient client = server.client();
   frame->writeTo(client);
 }
- 
+
 void handleJpgLo()
 {
   if (!esp32cam::Camera.changeResolution(loRes)) {
@@ -42,7 +42,7 @@ void handleJpgLo()
   }
   serveJpg();
 }
- 
+
 void handleJpgHi()
 {
   if (!esp32cam::Camera.changeResolution(hiRes)) {
@@ -50,7 +50,7 @@ void handleJpgHi()
   }
   serveJpg();
 }
- 
+
 void handleJpgMid()
 {
   if (!esp32cam::Camera.changeResolution(midRes)) {
@@ -58,14 +58,11 @@ void handleJpgMid()
   }
   serveJpg();
 }
- 
- 
+
+
 void  setup(){
   Serial.begin(115200);
   Serial.println();
-
-  pinMode(TXD2, OUTPUT);
-  digitalWrite(TXD2, HIGH);
 
   {
     using namespace esp32cam;
@@ -74,7 +71,7 @@ void  setup(){
     cfg.setResolution(hiRes);
     cfg.setBufferCount(2);
     cfg.setJpeg(80);
- 
+
     bool ok = Camera.begin(cfg);
     Serial.println(ok ? "CAMERA OK" : "CAMERA FAIL");
   }
@@ -90,7 +87,7 @@ void  setup(){
   Serial.println("  /cam-lo.jpg");
   Serial.println("  /cam-hi.jpg");
   Serial.println("  /cam-mid.jpg");
- 
+
   server.on("/cam-lo.jpg", handleJpgLo);
   server.on("/cam-hi.jpg", handleJpgHi);
   server.on("/cam-mid.jpg", handleJpgMid);
@@ -100,22 +97,18 @@ void  setup(){
     String message;
     if (request->hasParam("value", true)) {
       message = request->getParam("value", true)->value();
-      if(message == "T"){
-        digitalWrite(TXD2, LOW);
-      }
-      else if (message == "F"){
-        digitalWrite(TXD2, HIGH);
-      }
+      Serial.println(message);
+
     } else {
       message = "No message sent";
     }
     request->send(200, "text/plain", "Hello, client! I received your message.");
   });
- 
+
   server.begin();
   asyncserver.begin();
 }
- 
+
 void loop()
 {
   server.handleClient();
