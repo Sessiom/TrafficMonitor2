@@ -314,34 +314,36 @@ void loop() {
 
 
 /* When yellow "car is approaching" */  
-void carDetection1(){
+void carDetection1() {
+    if (Serial2.available()) {
         String incomingMessage = Serial2.readStringUntil('\n');
         incomingMessage.trim();
         Serial.print("Message Received: ");
         Serial.println(incomingMessage);
-        if (incomingMessage == "T") {
+        if(incomingMessage == "T") {
             isCarWaiting = true;
             digitalWrite(onBoard, HIGH);
-        } else if(incomingMessage == "F"){
+        } else if(incomingMessage == "F") {
             isCarWaiting = false;
             digitalWrite(onBoard, LOW);
         }
+    }
 }
 
 /* When red say "car is waiting"*/
-void carDetection2(){
-    String incomingMessage = Serial2.readStringUntil('\n');
-    incomingMessage.trim();
-    Serial.print("Message Received: ");
-    Serial.println(incomingMessage);
-    if(incomingMessage == "T")
-    {
-      isCarWaiting = true;
-      digitalWrite(onBoard, HIGH);
-    }
-    else if(incomingMessage == "F"){
-      isCarWaiting = false;
-      digitalWrite(onBoard, LOW);
+void carDetection2() {
+    if (Serial2.available()) {
+        String incomingMessage = Serial2.readStringUntil('\n');
+        incomingMessage.trim();
+        Serial.print("Message Received: ");
+        Serial.println(incomingMessage);
+        if(incomingMessage == "T") {
+            isCarWaiting = true;
+            digitalWrite(onBoard, HIGH);
+        } else if(incomingMessage == "F") {
+            isCarWaiting = false;
+            digitalWrite(onBoard, LOW);
+        }
     }
 }
 
