@@ -316,38 +316,38 @@ void loop() {
     if (deviceConnected) {
         pSouthCharacteristic->setValue(String(board1IsSlow).c_str());
         pSouthCharacteristic->notify();
-        Serial.print("New value notified: ");
+        Serial.print("board1IsSlow: ");
         Serial.println(board1IsSlow);
 
         pNorthCharacteristic->setValue(String(board2IsSlow).c_str());
         pNorthCharacteristic->notify();
-        Serial.print("New value notified: ");
+        Serial.print("board2IsSlow: ");
         Serial.println(board2IsSlow);
 
         pCarCountCharacteristic->setValue(String(carsInLane).c_str());
         pCarCountCharacteristic->notify();
-        Serial.print("New value notified: ");
+        Serial.print("carsInLane: ");
         Serial.println(carsInLane);
 
         pSign1CountCharacteristic->setValue(String(board1SignCount).c_str());
         pSign1CountCharacteristic->notify();
-        Serial.print("New value notified: ");
-        Serial.print(board1SignCount);
+        Serial.print("board1SignCount: ");
+        Serial.println(board1SignCount);
 
         pSign2CountCharacteristic->setValue(String(board2SignCount).c_str());
         pSign2CountCharacteristic->notify();
-        Serial.print("New value notified: ");
-        Serial.print(board2SignCount);
+        Serial.print("board2SignCount: ");
+        Serial.println(board2SignCount);
 
         pWaiting1Characteristic->setValue(String(waiting1).c_str());
         pWaiting1Characteristic->notify();
-        Serial.print("New value notified: ");
-        Serial.print(waiting1);
+        Serial.print("waiting1: ");
+        Serial.println(waiting1);
 
         pWaiting2Characteristic->setValue(String(waiting2).c_str());
         pWaiting2Characteristic->notify();
-        Serial.print("New value notified: ");
-        Serial.print(waiting2);
+        Serial.print("waiting2: ");
+        Serial.println(waiting2);
 
         delay(500); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
     }
