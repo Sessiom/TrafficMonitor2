@@ -3,7 +3,7 @@
   
 */
 
-//for esp 1
+//for esp 1 (blue)
 
 #include <esp_now.h>
 #include <WiFi.h>
