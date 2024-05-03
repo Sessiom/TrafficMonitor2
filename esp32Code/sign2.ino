@@ -3,7 +3,7 @@
   
 */
 
-//for esp 2 (black)
+//for esp 2 (black)    (ultrasonic brown green orange yellow)
 
 #include <esp_now.h>
 #include <WiFi.h>
@@ -191,7 +191,7 @@ void loop() {
 
     carsInLane = 0;
     // Set values to send
-    trafficSignReadings.id = 1;
+    trafficSignReadings.id = 2;
     trafficSignReadings.slw = isSlow;
     trafficSignReadings.carsentering = carsEntering;
     trafficSignReadings.carsleaving = carsLeaving;
@@ -267,7 +267,7 @@ void loop() {
     }
 
     // Set values to send
-    trafficSignReadings.id = 1;
+    trafficSignReadings.id = 2;
     trafficSignReadings.slw = isSlow;
     trafficSignReadings.carsentering = carsEntering;
     trafficSignReadings.carsleaving = carsLeaving;
