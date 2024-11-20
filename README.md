@@ -3,7 +3,7 @@ This is part of my teams Senior Design Project in which we are building two stre
 single-lane roadside construction that communicate which each other much like traffic flaggers.
 This repository has the esp32 code, espCam code for each sign and the object detection code.
 In addition, this repository contains code for a Vue app which displays data from an esp32 using ble (bluetooth low energy). 
-It builds off of [sessiom.github.io/trafficMonitor](sessiom.github.io/trafficMonitor).
+It builds off of [trafficMonitor](https://github.com/sessiom/trafficMonitor/).
 The data from each session is then saved to mongoDB. 
 ## References
 -  ESP-NOW: https://randomnerdtutorials.com/esp-now-esp32-arduino-ide/
